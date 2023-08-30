@@ -14,6 +14,9 @@ namespace game
     VARP(showconnecting, 0, 0, 1);
     VARP(hidefrags, 0, 1, 1);
     VARP(showdeaths, 0, 0, 1);
+    VARP(showkpd, 0, 0, 1);
+    VARP(showaccuracy, 0, 0, 1);
+    VARP(showdamage, 0, 0, 2); 
 
     static hashset<teaminfo> teaminfos;
 
@@ -101,6 +104,20 @@ namespace game
         if(x->players.length() < y->players.length()) return false;
         return x->team && y->team && strcmp(x->team, y->team) < 0;
     }
+    
+    #define COL_WHITE 0xFFFFDD
+    #define COL_GRAY 0xA0A0A0
+    #define COL_BACKGROUND 0x9A9A9A
+    #define COL_RED 0xED2B2C
+    #define COL_BLUE 0x2E82FF
+    #define COL_YELLOW 0xFFC040
+    #define COL_GREEN 0x40FF80
+    #define COL_ORANGE 0xFF8000
+    #define COL_MAGENTA 0xC040C0
+    #define COL_MASTER COL_GREEN
+    #define COL_AUTH COL_MAGENTA
+    #define COL_ADMIN COL_ORANGE
+
 
     static int groupplayers()
     {
@@ -266,6 +283,39 @@ namespace game
                 g.textf("%s ", statuscolor(o, 0xFFFFDD), NULL, colorname(o));
             });
             g.poplist();
+
+            if (showkpd)
+            {
+                g.pushlist();
+                g.strut(5);
+                g.text("kpd", COL_GRAY);
+                loopscoregroup(o, g.textf("%.1f", fgcolor, NULL, (float)o->frags / max(1, o->deaths)));
+                g.poplist();
+            }
+
+            if (showaccuracy)
+            {
+                g.pushlist();
+                g.strut(5);
+                g.text("acc", COL_GRAY);
+                loopscoregroup(o, g.textf("%.0f%%", fgcolor, NULL, playeraccuracy(o)));
+                g.poplist();
+            }
+
+            if (showdamage)
+            {
+                g.pushlist();
+                g.strut(6);
+                g.text("dmg", COL_GRAY);
+                loopscoregroup(o, {
+                    float dmg = (float) showdamage == 1 ? playerdamage(o, DMG_DEALT) : playernetdamage(o);
+                    const char *fmt = "%.0f";
+                    if (fabs(dmg) > 1000.0f) { fmt = "%.1fk"; dmg = dmg / 1000.0f; }
+                    g.textf(fmt, fgcolor, NULL, dmg);
+                });
+                g.poplist();
+            }
+
 
             if(multiplayer(false) || demoplayback)
             {

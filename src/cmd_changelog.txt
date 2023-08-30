@@ -1,0 +1,7 @@
+VARP(showkpd, 0, 0, 1);
+VARP(showaccuracy, 0, 0, 1);
+VARP(showdamage, 0, 0, 2);
+weaponstats;
+
+TODO
+change colors for scoreboard
