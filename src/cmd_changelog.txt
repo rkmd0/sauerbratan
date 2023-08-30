@@ -1,7 +1,9 @@
 VARP(showkpd, 0, 0, 1);
 VARP(showaccuracy, 0, 0, 1);
 VARP(showdamage, 0, 0, 2);
+VARP(showspecicons, 0, 1, 1);
 weaponstats;
+spec teleport;
 
 TODO
 change colors for scoreboard

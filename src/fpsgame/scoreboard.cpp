@@ -18,6 +18,7 @@ namespace game
     VARP(showaccuracy, 0, 0, 1);
     VARP(showdamage, 0, 0, 2);
     //VARP(showflags, 0, 0, 1);
+    VARP(showspecicons, 0, 1, 1);
 
     static hashset<teaminfo> teaminfos;
 
@@ -420,7 +421,14 @@ namespace game
                         g.pushlist();
                         g.background(0x808080, 3);
                     }
-                    g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
+                    //g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
+                    const playermodelinfo &mdl = getplayermodelinfo(o);
+                    //g.text(colorname(o), statuscolor(o, 0xFFFFDD), showplayericons ? mdl.ffaicon : NULL );
+                    if (showspecicons) {
+                        g.text(colorname(o), statuscolor(o, 0xFFFFDD), mdl.ffaicon);
+                    } else {
+                        g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
+                    }
                     if(o==player1 && highlightscore) g.poplist();
                 }
                 g.poplist();
