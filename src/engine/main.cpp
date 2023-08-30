@@ -1355,8 +1355,9 @@ int main(int argc, char **argv)
         curtime = scaledtime/100;
         timeerr = scaledtime%100;
         if(!multiplayer(false) && curtime>200) curtime = 200;
-        if(game::ispaused()) curtime = 0;
-		lastmillis += curtime;
+        //if(game::ispaused()) curtime = 0;
+        if(!game::ispaused()) lastmillis += curtime;
+		//lastmillis += curtime;
         totalmillis = millis;
         updatetime();
  
