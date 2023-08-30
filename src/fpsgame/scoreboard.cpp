@@ -16,7 +16,8 @@ namespace game
     VARP(showdeaths, 0, 0, 1);
     VARP(showkpd, 0, 0, 1);
     VARP(showaccuracy, 0, 0, 1);
-    VARP(showdamage, 0, 0, 2); 
+    VARP(showdamage, 0, 0, 2);
+    //VARP(showflags, 0, 0, 1);
 
     static hashset<teaminfo> teaminfos;
 

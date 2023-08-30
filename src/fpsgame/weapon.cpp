@@ -1,5 +1,6 @@
 // weapon.cpp: all shooting and effects code, projectile management
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game
 {
@@ -825,6 +826,7 @@ namespace game
 		d->gunwait = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*guns[d->gunselect].rays;
+        recordpotentialdamage(d);
     }
 
     void adddynlights()

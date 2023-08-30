@@ -1,4 +1,5 @@
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game
 {
@@ -396,6 +397,8 @@ namespace game
     void damaged(int damage, fpsent *d, fpsent *actor, bool local)
     {
         if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
+        
+        recorddamage(actor, d, damage);
 
         if(local) damage = d->dodamage(damage);
         else if(actor==player1) return;
@@ -528,12 +531,11 @@ namespace game
         }
     }
 
-    ICOMMAND(getfrags, "", (), intret(player1->frags));
-    ICOMMAND(getflags, "", (), intret(player1->flags));
-    ICOMMAND(getdeaths, "", (), intret(player1->deaths));
-    ICOMMAND(getaccuracy, "", (), intret((player1->totaldamage*100)/max(player1->totalshots, 1)));
-    ICOMMAND(gettotaldamage, "", (), intret(player1->totaldamage));
-    ICOMMAND(gettotalshots, "", (), intret(player1->totalshots));
+    ICOMMAND(getfrags, "", (), intret(hudplayer()->frags));
+    ICOMMAND(getflags, "", (), intret(hudplayer()->flags));
+    ICOMMAND(getdeaths, "", (), intret(hudplayer()->deaths));
+    ICOMMAND(gettotaldamage, "", (), intret(playerdamage(NULL, DMG_DEALT)));
+    ICOMMAND(gettotalshots, "", (), intret(playerdamage(NULL, DMG_POTENTIAL)));
 
     vector<fpsent *> clients;
 
@@ -621,6 +623,7 @@ namespace game
             d->maxhealth = 100;
             d->lifesequence = -1;
             d->respawned = d->suicided = -2;
+            d->stats.reset();
         }
 
         setclientmode();

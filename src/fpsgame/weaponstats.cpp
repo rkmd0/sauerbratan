@@ -20,6 +20,7 @@ namespace game {
         int gun = attacker->gunselect;
         // try to fix gun used to deal the damage
         if((gun != GUN_SG && damage != guns[gun].damage * (attacker->quadmillis ? 4 : 1)) || (gun == GUN_SG && damage%(attacker->quadmillis ? 40 : 10) != 0))
+        
         {
             gun = attacker->stats.lastprojectile;
         }
