@@ -8,6 +8,8 @@ paused spec movement;
 sessionlen - displaying the sessionlength into console
 VARP(renameprotection, 0, 0, 1);
 screenshot output message;
+VARP(hideping, 0, 0, 1);
+ -> VARP(pingvalue, INT_MIN, 0, INT_MAX);
 
 TODO
 change colors for scoreboard
