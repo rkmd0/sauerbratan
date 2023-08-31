@@ -7,6 +7,7 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
+    VARP(renameprotection, 0, 0, 1);
 
     float calcradarscale()
     {
@@ -1418,7 +1419,15 @@ namespace game
 
             case N_SWITCHNAME:
                 getstring(text, p);
-                if(d)
+                if(d == player1 && renameprotection) {
+                    filtertext(text, text, false, false, MAXNAMELEN);
+                    if(!text[0]) copystring(text, "unnamed");
+                    conoutf("\f3warning:\f7 attempt to rename you to \f3%s", colorname(d, text));
+                    switchname(player1->name);
+                    break;
+                }
+                else if(d)
+
                 {
                     filtertext(text, text, false, false, MAXNAMELEN);
                     if(!text[0]) copystring(text, "unnamed");
