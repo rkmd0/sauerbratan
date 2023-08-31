@@ -3426,6 +3426,18 @@ COMMAND(strsplice, "ssii");
 #ifndef STANDALONE
 ICOMMAND(getmillis, "i", (int *total), intret(*total ? totalmillis : lastmillis));
 
+ICOMMAND(sessionlen, "i", (int *total), {
+    int milliseconds = (*total ? totalmillis : lastmillis);
+    int seconds = milliseconds / 1000;
+    int minutes = seconds / 60;
+    int hours = minutes / 60;
+
+    int remaining_seconds = seconds % 60;
+    int remaining_minutes = minutes % 60;
+
+    conoutf("Session Duration: %02d:%02d:%02d", hours, remaining_minutes, remaining_seconds);
+});
+
 struct sleepcmd
 {
     int delay, millis, flags;

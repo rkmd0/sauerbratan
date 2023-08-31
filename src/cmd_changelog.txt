@@ -5,6 +5,7 @@ VARP(showspecicons, 0, 1, 1);
 weaponstats;
 spec teleport;
 paused spec movement;
+sessionlen - displaying the sessionlength into console
 
 TODO
 change colors for scoreboard
