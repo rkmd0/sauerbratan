@@ -767,6 +767,7 @@ namespace game
     extern void forceintermission();
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
+    extern int hasflag(fpsent *d);
 
     // monster
     struct monster;

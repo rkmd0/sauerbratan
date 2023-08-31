@@ -10,6 +10,7 @@ VARP(renameprotection, 0, 0, 1);
 screenshot output message;
 VARP(hideping, 0, 0, 1);
  -> VARP(pingvalue, INT_MIN, 0, INT_MAX);
+VARP(showctfflagicons, 0, 1, 1);
 
 TODO
 change colors for scoreboard

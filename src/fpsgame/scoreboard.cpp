@@ -19,6 +19,7 @@ namespace game
     VARP(showdamage, 0, 0, 2);
     //VARP(showflags, 0, 0, 1);
     VARP(showspecicons, 0, 1, 1);
+    VARP(showctfflagicons, 0, 1, 1);
 
     static hashset<teaminfo> teaminfos;
 
@@ -274,6 +275,26 @@ namespace game
                 g.strut(6);
                 g.text("deaths", fgcolor);
                 loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->deaths));
+                g.poplist();
+            }
+
+            if(m_ctf && showctfflagicons) {
+                g.pushlist();
+                g.text("", 0x000000);
+                loopscoregroup(o, {
+                    // check if the player is carrying a flag
+                    int flagteam = hasflag(o);
+                    if(flagteam > 0) { // has flag
+                        // choose the correct icon
+                        const char *icon =
+                            m_hold ? "../hud/blip_neutral_flag.png"
+                            : isteam(player1->team, flagteam == 1 ? "good" : "evil") ? "../hud/blip_blue_flag.png" : "../hud/blip_red_flag.png";
+
+                        g.text("", 0x000000, icon);
+                    } else {
+                        g.text("", 0x000000);
+                    }
+                });
                 g.poplist();
             }
 
