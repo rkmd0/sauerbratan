@@ -3611,6 +3611,8 @@ void screenshot(char *filename)
     glPixelStorei(GL_PACK_ALIGNMENT, texalign(image.data, screenw, 3));
     glReadPixels(0, 0, screenw, screenh, GL_RGB, GL_UNSIGNED_BYTE, image.data);
     saveimage(path(buf), format, image, true);
+    conoutf("screenshot saved \"%s\"", buf);
+
 }
 
 COMMAND(screenshot, "s");
