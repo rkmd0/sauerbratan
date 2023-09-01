@@ -545,6 +545,7 @@ struct fpsent : dynent, fpsstate
     int respawned, suicided;
     int lastpain;
     int lastaction, lastattackgun;
+    int lasthitpushgun;
     bool attacking;
     int attacksound, attackchan, idlesound, idlechan;
     int lasttaunt;
@@ -581,6 +582,7 @@ struct fpsent : dynent, fpsstate
         vec push(dir);
         push.mul((actor==this && guns[gun].exprad ? EXP_SELFPUSH : 1.0f)*guns[gun].hitpush*damage/weight);
         vel.add(push);
+        lasthitpushgun = gun;
     }
 
     void stopattacksound()
@@ -619,6 +621,21 @@ struct fpsent : dynent, fpsstate
         return max(0, secs - (::lastmillis - lastpain - delay)/1000);
     }
 };
+
+struct fragmessage {
+    string attackername, victimname;
+    int weapon;
+    int fragtime;
+
+    fragmessage(const char *aname, const char *vname, int fragweapon)
+    {
+        copystring(attackername, aname ? aname : "");
+        copystring(victimname, vname);
+        weapon = fragweapon;
+        fragtime = lastmillis;
+    }
+};
+
 
 struct teamscore
 {
@@ -745,6 +762,8 @@ namespace game
     extern void timeupdate(int timeremain);
     extern void msgsound(int n, physent *d = NULL);
     extern void drawicon(int icon, float x, float y, float sz = 120);
+    extern void addfragmessage(const char *aname, const char *vname, int gun);
+    extern void clearfragmessages();
     const char *mastermodecolor(int n, const char *unknown);
     const char *mastermodeicon(int n, const char *unknown);
 

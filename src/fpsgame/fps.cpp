@@ -35,9 +35,11 @@ namespace game
     {
         if(arg[0] ? player1->state==CS_SPECTATOR : following>=0)
         {
+            int ofollowing = following;
             following = arg[0] ? parseplayer(arg) : -1;
             if(following==player1->clientnum) following = -1;
             followdir = 0;
+            if(following!=ofollowing) clearfragmessages();
             conoutf("follow %s", following>=0 ? "on" : "off");
         }
 	}
@@ -56,6 +58,7 @@ namespace game
             cur = (cur + dir + clients.length()) % clients.length();
             if(clients[cur] && clients[cur]->state!=CS_SPECTATOR)
             {
+                if(following!=cur) clearfragmessages();
                 if(following<0) conoutf("follow on");
                 following = cur;
                 followdir = dir;
@@ -116,6 +119,7 @@ namespace game
         if(following<0) return;
         following = -1;
         followdir = 0;
+        clearfragmessages();
         conoutf("follow off");
     }
 
@@ -505,6 +509,11 @@ namespace game
             if(d==player1) conoutf(contype, "\f2%s got fragged by %s", dname, aname);
             else conoutf(contype, "\f2%s fragged %s", aname, dname);
         }
+        if(d==h || actor==h) {
+            if(d==actor) addfragmessage(NULL, dname, HICON_TOKEN-HICON_FIST);
+            else addfragmessage(aname, dname, d->lasthitpushgun);
+        }
+
         deathstate(d);
 		ai::killed(d, actor);
     }
@@ -1059,6 +1068,76 @@ namespace game
         pophudmatrix();
     }
 
+    vector<fragmessage> fragmessages; // oldest first, newest at the end
+
+    VARP(fragmsg, 0, 0, 2);
+    VARP(fragmsgmax, 1, 3, 10);
+    VARP(fragmsgmillis, 0, 3000, 10000);
+    VARP(fragmsgfade, 0, 1, 1);
+    FVARP(fragmsgx, 0, 0.5f, 1.0f);
+    FVARP(fragmsgy, 0, 0.15f, 1.0f);
+    FVARP(fragmsgscale, 0, 0.5f, 1.0f);
+
+    void addfragmessage(const char *aname, const char *vname, int gun)
+    {
+        fragmessages.growbuf(fragmsgmax);
+        fragmessages.shrink(min(fragmessages.length(), fragmsgmax));
+        if(fragmessages.length()>=fragmsgmax) fragmessages.remove(0, fragmessages.length()-fragmsgmax+1);
+        fragmessages.add(fragmessage(aname, vname, gun));
+    }
+
+    void clearfragmessages()
+    {
+        fragmessages.shrink(0);
+    }
+
+    void drawfragmessages(int w, int h)
+    {
+        if(fragmessages.empty()) return;
+
+        float stepsize = (3*HICON_SIZE)/2;
+        vec2 origin = vec2(fragmsgx, fragmsgy).mul(vec2(w, h).div(fragmsgscale));
+
+        pushhudmatrix();
+        hudmatrix.scale(fragmsgscale, fragmsgscale, 1);
+        flushhudmatrix();
+
+        for(int i = fragmessages.length()-1; i>=0; i--)
+        {
+            fragmessage &m = fragmessages[i];
+
+            if(lastmillis-m.fragtime > fragmsgmillis + (fragmsgfade ? 255 : 0))
+            {
+                // all messages before i are older, so remove all of them
+                fragmessages.remove(0, i+1);
+                break;
+            }
+
+            int alpha = 255 - max(0, lastmillis-m.fragtime-fragmsgmillis);
+
+            vec2 drawposcenter = vec2(0, (fragmessages.length()-1-i)*stepsize).add(origin);
+
+            int tw, th; vec2 drawpos;
+            if(m.attackername[0])
+            {
+                text_bounds(m.attackername, tw, th);
+                drawpos = vec2(-2*(tw+HICON_SIZE), -th).div(2).add(drawposcenter);
+                draw_text(m.attackername, drawpos.x, drawpos.y, 0xFF, 0xFF, 0xFF, alpha);
+            }
+
+            drawpos = vec2(drawposcenter).sub(HICON_SIZE / 2);
+            gle::color(bvec(0xFF, 0xFF, 0xFF), alpha);
+            drawicon(HICON_FIST + m.weapon, drawpos.x, drawpos.y);
+
+            text_bounds(m.victimname, tw, th);
+            drawpos = vec2(2*HICON_SIZE, -th).div(2).add(drawposcenter);
+            draw_text(m.victimname, drawpos.x, drawpos.y, 0xFF, 0xFF, 0xFF, alpha);
+        }
+
+        pophudmatrix();
+    }
+
+
     void gameplayhud(int w, int h)
     {
         pushhudmatrix();
@@ -1100,6 +1179,7 @@ namespace game
         {
             if(gameclock) drawgameclock(w, h);
             if(hudscore) drawhudscore(w, h);
+            if(fragmsg==1 || (fragmsg==2 && !m_insta)) drawfragmessages(w, h);
         }
     }
 
