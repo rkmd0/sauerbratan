@@ -312,7 +312,7 @@ namespace game
                 g.pushlist();
                 g.strut(5);
                 g.text("kpd", fgcolor);
-                loopscoregroup(o, g.textf("%.1f", fgcolor, NULL, (float)o->frags / max(1, o->deaths)));
+                loopscoregroup(o, g.textf("%.1f", COL_WHITE, NULL, (float)o->frags / max(1, o->deaths)));
                 g.poplist();
             }
 
@@ -321,7 +321,7 @@ namespace game
                 g.pushlist();
                 g.strut(5);
                 g.text("acc", fgcolor);
-                loopscoregroup(o, g.textf("%.0f%%", fgcolor, NULL, playeraccuracy(o)));
+                loopscoregroup(o, g.textf("%.0f%%", COL_WHITE, NULL, playeraccuracy(o)));
                 g.poplist();
             }
 
@@ -334,7 +334,7 @@ namespace game
                     float dmg = (float) showdamage == 1 ? playerdamage(o, DMG_DEALT) : playernetdamage(o);
                     const char *fmt = "%.0f";
                     if (fabs(dmg) > 1000.0f) { fmt = "%.1fk"; dmg = dmg / 1000.0f; }
-                    g.textf(fmt, fgcolor, NULL, dmg);
+                    g.textf(fmt, COL_WHITE, NULL, dmg);
                 });
                 g.poplist();
             }

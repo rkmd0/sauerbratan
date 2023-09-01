@@ -1153,11 +1153,11 @@ namespace game
             fpsent *f = followingplayer();
             text_bounds(f ? colorname(f) : " ", fw, fh);
             fh = max(fh, ph);
-            draw_text("SPECTATOR", w*1800/h - tw - pw, 1650 - th - fh);
+            draw_text("SPECTATOR", w*1800/h - tw - pw, 1600 - th - fh);
             if(f)
             {
                 int color = statuscolor(f, 0xFFFFFF);
-                draw_text(colorname(f), w*1800/h - fw - pw, 1650 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
+                draw_text(colorname(f), w*1800/h - fw - pw, 1600 - fh, (color>>16)&0xFF, (color>>8)&0xFF, color&0xFF);
             }
         }
 
