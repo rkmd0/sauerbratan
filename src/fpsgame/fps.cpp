@@ -332,7 +332,7 @@ namespace game
         else conoutf("Total stats: %.1f hours played, %d frags, %d deaths, %.2f K/D, %d flags", (totalplaytime > 0 ? totalplaytime*1.f : 1.00f) / 3600, totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths*1.f : 1.00f), totalflags);
     }
 
-    ICOMMAND(localstats, "", (), printlocalstats());
+    ICOMMAND(localstats, "", (), localstats());
     ICOMMAND(resetlocalstats, "", (), resetlocalstats());
 
     float proximityscore(float x, float lower, float upper)

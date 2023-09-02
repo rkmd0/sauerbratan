@@ -28,3 +28,4 @@ timestamp on log.txt creating an unique file for each session
 
 TODO
 change colors for scoreboard
+fix localstats, change it to a hh:mm:ss format, maybe exlude totalplaytime from reset, frags etc should add based on packet? intermission is lame
