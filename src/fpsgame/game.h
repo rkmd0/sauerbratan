@@ -752,6 +752,7 @@ namespace game
     extern void stopfollowing();
     extern void clientdisconnected(int cn, bool notify = true);
     extern void clearclients(bool notify = true);
+    extern void playtime();
     extern void startgame();
     extern float proximityscore(float x, float lower, float upper);
     extern void pickgamespawn(fpsent *d);

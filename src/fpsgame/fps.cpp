@@ -251,6 +251,7 @@ namespace game
             return;
         }
 
+        playtime();
         physicsframe();
         ai::navigate();
         if(player1->state != CS_DEAD && !intermission)
@@ -291,6 +292,48 @@ namespace game
         }
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
+
+    VARP(savestats, 0, 1, 1);
+
+    VARP(totalplaytime, 0, 0, INT_MAX);
+    VARP(totalfrags, INT_MIN, 0, INT_MAX);
+    VARP(totaldeaths, INT_MIN, 0, INT_MAX);
+    VARP(totalflags, 0, 0, INT_MAX);
+
+    void playtime()
+    {
+        static int lastsec = 0;
+        if(totalmillis - lastsec >= 1000)
+        {
+            int cursecs = (totalmillis - lastsec) / 1000;
+            totalplaytime += cursecs;
+            lastsec += cursecs * 1000;
+        }
+    }
+
+    void resetlocalstats()
+    {
+        totalplaytime = 0;
+        totalfrags = 0;
+        totaldeaths = 0;
+        totalflags = 0;
+    }
+
+    void localstats()
+    {
+        int seconds = totalplaytime;
+        int days = seconds / 86400;
+        seconds -= days * 86400;
+        int hours = seconds / 3600;
+        seconds -= hours * 3600;
+        int minutes = seconds / 60;
+        seconds -= minutes * 60;
+        if(!savestats) conoutf("Local stats are currently disabled");
+        else conoutf("Total stats: %.1f hours played, %d frags, %d deaths, %.2f K/D, %d flags", (totalplaytime > 0 ? totalplaytime*1.f : 1.00f) / 3600, totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths*1.f : 1.00f), totalflags);
+    }
+
+    ICOMMAND(localstats, "", (), printlocalstats());
+    ICOMMAND(resetlocalstats, "", (), resetlocalstats());
 
     float proximityscore(float x, float lower, float upper)
     {
@@ -541,6 +584,13 @@ namespace game
 
             showscores(true);
             disablezoom();
+
+            if(savestats)
+            {
+                totalfrags += player1->frags;
+                totaldeaths += player1->deaths;
+                totalflags += player1->flags;
+            }
 
             execident("intermission");
         }
