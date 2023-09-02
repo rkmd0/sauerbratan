@@ -20,6 +20,10 @@ add fragmessages
     FVARP(fragmsgy, 0, 0.15f, 1.0f);
     FVARP(fragmsgscale, 0, 0.5f, 1.0f);
 VARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
+VARP(savestats, 0, 1, 1);
+->  ICOMMAND(localstats, "", (), printlocalstats());
+    ICOMMAND(resetlocalstats, "", (), resetlocalstats());
+timestamp on log.txt creating an unique file for each session
 
 
 TODO
