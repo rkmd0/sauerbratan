@@ -17,7 +17,7 @@ namespace game
     VARP(showkpd, 0, 0, 1);
     VARP(showaccuracy, 0, 0, 1);
     VARP(showdamage, 0, 0, 2);
-    //VARP(showflags, 0, 0, 1);
+    VARP(showflags, 0, 1, 1);
     VARP(showspecicons, 0, 1, 1);
     VARP(showctfflagicons, 0, 1, 1);
     VARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
@@ -273,7 +273,8 @@ namespace game
                 g.pushlist();
                 g.strut(6);
                 g.text("frags", fgcolor);
-                loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->frags));
+                //loopscoregroup(o, g.textf("%d", 0xFFFFDD, NULL, o->frags));
+                loopscoregroup(o, g.textf((showflags && o->flags) ? "%d/%d" : "%d", 0xFFFFDD, NULL, o->frags, o->flags));
                 g.poplist();
             }
 

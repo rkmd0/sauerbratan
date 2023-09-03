@@ -330,6 +330,7 @@ namespace game
         seconds -= minutes * 60;
         if(!savestats) conoutf("Local stats are currently disabled");
         else conoutf("Total stats: %.1f hours played, %d frags, %d deaths, %.2f K/D, %d flags", (totalplaytime > 0 ? totalplaytime*1.f : 1.00f) / 3600, totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths*1.f : 1.00f), totalflags);
+        conoutf("Total stats: %02d:%02d:%02d played, %d frags, %d deaths, %.2f K/D, %d flags", hours, minutes, seconds, totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths * 1.f : 1.00f), totalflags);
     }
 
     ICOMMAND(localstats, "", (), localstats());
