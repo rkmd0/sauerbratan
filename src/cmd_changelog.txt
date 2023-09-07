@@ -31,3 +31,11 @@ TODO
 change colors for scoreboard
 fix localstats, change it to a hh:mm:ss format, maybe exlude totalplaytime from reset, frags etc should add based on packet? intermission is lame
 make an extra column for flags - hideflags?
+
+TODO kinda but already did
+change colors (fgcolor) to 'normal'
+gui changes are neat whatsoever but lets just stay on vanilla
+add filterserver for server search
+-> add menu before
+showclientnum 2 but fixed
+update localstats - probably broken in some way but whateva
