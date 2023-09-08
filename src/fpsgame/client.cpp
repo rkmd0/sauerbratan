@@ -1263,6 +1263,9 @@ namespace game
 
     VARP(hideping, 0, 0, 1);
 	VARP(pingvalue, INT_MIN, 0, INT_MAX);
+    extern int totalfrags;
+	extern int totaldeaths;
+	extern int savestats;
 
     void parsemessages(int cn, fpsent *d, ucharbuf &p)
     {
@@ -1571,6 +1574,8 @@ namespace game
                        *actor = getclient(acn);
                 if(!actor) break;
                 actor->frags = frags;
+                if (savestats && actor == player1 && !m_demo && actor->frags && actor != victim) totalfrags++;
+                if (savestats && victim == player1 && !m_demo) totaldeaths++;
                 if(m_teammode) setteaminfo(actor->team, tfrags);
                 extern int hidefrags;
                 if(actor!=player1 && (!cmode || !cmode->hidefrags() || !hidefrags))

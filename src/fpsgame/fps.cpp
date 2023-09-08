@@ -303,7 +303,7 @@ namespace game
     void playtime()
     {
         static int lastsec = 0;
-        if(totalmillis - lastsec >= 1000)
+        if(savestats && totalmillis - lastsec >= 1000)
         {
             int cursecs = (totalmillis - lastsec) / 1000;
             totalplaytime += cursecs;
@@ -584,13 +584,6 @@ namespace game
 
             showscores(true);
             disablezoom();
-
-            if(savestats)
-            {
-                totalfrags += player1->frags;
-                totaldeaths += player1->deaths;
-                totalflags += player1->flags;
-            }
 
             execident("intermission");
         }

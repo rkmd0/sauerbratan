@@ -924,6 +924,7 @@ struct ctfclientmode : clientmode
 
     void scoreflag(fpsent *d, int relay, int relayversion, int goal, int goalversion, int goalspawn, int team, int score, int dflags)
     {
+        extern int totalflags;
         setscore(team, score);
         if(flags.inrange(goal))
         {
@@ -946,6 +947,9 @@ struct ctfclientmode : clientmode
         {
             defformatstring(ds, "%d", score);
             particle_textcopy(d->abovehead(), ds, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
+        }
+        if(savestats && d==player1) {
+            totalflags++;
         }
         d->flags = dflags;
         conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
