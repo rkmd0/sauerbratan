@@ -925,6 +925,7 @@ struct ctfclientmode : clientmode
     void scoreflag(fpsent *d, int relay, int relayversion, int goal, int goalversion, int goalspawn, int team, int score, int dflags)
     {
         extern int totalflags;
+        extern int savestats;
         setscore(team, score);
         if(flags.inrange(goal))
         {
