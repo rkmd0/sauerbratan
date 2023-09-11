@@ -25,6 +25,10 @@ VARP(savestats, 0, 1, 1);
     ICOMMAND(resetlocalstats, "", (), resetlocalstats());
 timestamp on log.txt creating an unique file for each session
 VARP(showflags, 0, 1, 1); // showing flag count, if the respective player has any, next to the fragcount (frags/flags)
+VARP(showclientnum, 0, 0, 2); // showing clientnum next to the name - todo - maybe different format?
+    - adjusted scoreboard
+
+
 
 
 TODO

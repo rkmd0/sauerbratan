@@ -5,7 +5,7 @@ namespace game
 {
     VARP(scoreboard2d, 0, 1, 1);
     VARP(showservinfo, 0, 1, 1);
-    VARP(showclientnum, 0, 0, 1);
+    VARP(showclientnum, 0, 0, 2);
     VARP(showpj, 0, 0, 1);
     VARP(showping, 0, 1, 2);
     VARP(showspectators, 0, 1, 1);
@@ -412,7 +412,7 @@ namespace game
                 }
             }
 
-            if(showclientnum || player1->privilege>=PRIV_MASTER)
+            if(showclientnum == 1 || (showclientnum == 1 player1->privilege>=PRIV_MASTER))
             {
                 g.space(1);
                 g.pushlist();
@@ -436,7 +436,7 @@ namespace game
 
         if(showspectators && spectators.length())
         {
-            if(showclientnum || player1->privilege>=PRIV_MASTER)
+            if(showclientnum == 1|| (showclientnum == 1 && player1->privilege>=PRIV_MASTER))
             {
                 g.pushlist();
 
@@ -494,7 +494,137 @@ namespace game
 
                 g.poplist();
             }
-            else
+
+            if (showclientnum == 2) {
+    g.pushlist();
+    g.pushlist();
+    
+    if (showteamsize) {
+        g.textf("spectator #%d", 0xFFFF80, " ", spectators.length());
+        g.strut(15);
+    } else {
+        g.text("spectator ", 0xFFFF80, " ");
+        g.strut(12);
+    }
+    
+    loopv(spectators) {
+        fpsent *o = spectators[i];
+        
+        if (o == player1 && highlightscore) {
+            g.pushlist();
+            g.background(0x808080, 3);
+        }
+        
+        const playermodelinfo &mdl = getplayermodelinfo(o);
+        
+        if (showspecicons) {
+            g.text(colorname(o), statuscolor(o, 0xFFFFDD), mdl.ffaicon);
+        } else {
+            g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
+        }
+        
+        if (o == player1 && highlightscore) {
+            g.poplist();
+        }
+    }
+    
+    g.poplist();
+    
+    if ((multiplayer(false) || demoplayback) && showspectatorping) {
+        g.space(1);
+        g.pushlist();
+        g.text("ping", 0xFFFF80);
+        g.strut(6);
+        
+        loopv(spectators) {
+            fpsent *o = spectators[i];
+            fpsent *p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
+            
+            if (!p) {
+                p = o;
+            }
+            
+            if (p->state == CS_LAGGED) {
+                g.text("LAG", 0xFFFFDD);
+            } else {
+                g.textf("%d", 0xFFFFDD, NULL, p->ping);
+            }
+        }
+        
+        g.poplist();
+    }
+    
+    g.space(1);
+    g.pushlist();
+    g.poplist();
+} else if (showclientnum == 0) {
+    if (showspecicons) {
+        g.pushlist();
+        g.pushlist();
+        
+        if (showteamsize) {
+            g.textf("spectator #%d", 0xFFFF80, " ", spectators.length());
+            g.strut(15);
+        } else {
+            g.text("spectator ", 0xFFFF80, " ");
+            g.strut(12);
+        }
+        
+        loopv(spectators) {
+            fpsent *o = spectators[i];
+            
+            if (o == player1 && highlightscore) {
+                g.pushlist();
+                g.background(0x808080, 3);
+            }
+            
+            const playermodelinfo &mdl = getplayermodelinfo(o);
+            
+            if (showspecicons) {
+                g.text(colorname(o), statuscolor(o, 0xFFFFDD), mdl.ffaicon);
+            } else {
+                g.text(colorname(o), statuscolor(o, 0xFFFFDD), "spectator");
+            }
+            
+            if (o == player1 && highlightscore) {
+                g.poplist();
+            }
+        }
+        
+        g.poplist();
+        
+        if ((multiplayer(false) || demoplayback) && showspectatorping) {
+            g.space(1);
+            g.pushlist();
+            g.text("ping", 0xFFFF80);
+            g.strut(6);
+            
+            loopv(spectators) {
+                fpsent *o = spectators[i];
+                fpsent *p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
+                
+                if (!p) {
+                    p = o;
+                }
+                
+                if (p->state == CS_LAGGED) {
+                    g.text("LAG", 0xFFFFDD);
+                } else {
+                    g.textf("%d", 0xFFFFDD, NULL, p->ping);
+                }
+            }
+            
+            g.poplist();
+        }
+        
+        g.space(1);
+        g.pushlist();
+        g.poplist();
+    }
+}
+
+
+    else
             {
                 g.textf("%d spectator%s", 0xFFFF80, " ", spectators.length(), spectators.length()!=1 ? "s" : "");
                 loopv(spectators)
