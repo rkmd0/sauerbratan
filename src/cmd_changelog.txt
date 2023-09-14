@@ -31,6 +31,7 @@ VARP(savestats, 0, 1, 1);
     VARP(totalflags, 0, 0, INT_MAX);
 timestamp on log.txt creating an unique file for each session
 VARP(showflags, 0, 1, 1); // showing flag count, if the respective player has any, next to the fragcount (frags/flags)
+filterserver - way to search for servers (mode, map or description)
 
 
 TODO
@@ -38,10 +39,6 @@ change colors for scoreboard
 make an extra column for flags - hideflags?
 
 TODO kinda but already did
-change colors (fgcolor) to 'normal'
-gui changes are neat whatsoever but lets just stay on vanilla - done
-add filterserver for server search
-    -> add menu before
 showclientnum 2 but fixed
 update localstats - probably broken in some way but whateva
     -> add more features

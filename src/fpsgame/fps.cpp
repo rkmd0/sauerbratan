@@ -1353,9 +1353,51 @@ void localstats() // rework on this - add var possibility (more advanced stats e
     {
         return (n>=MM_START && size_t(n-MM_START)<sizeof(mastermodeicons)/sizeof(mastermodeicons[0])) ? mastermodeicons[n-MM_START] : unknown;
     }
+    
+    // put this somewhere else you lazy bum
+    int cubecasecmp(const char *s1, const char *s2, int n)
+    {
+        if(!s1 || !s2) return !s2 - !s1;
+        while(n-- > 0)
+        {
+            int c1 = cubelower(*s1++), c2 = cubelower(*s2++);
+            if(c1 != c2) return c1 - c2;
+            if(!c1) break;
+        }
+        return 0;
+    }
+
+    char *cubecasefind(const char *haystack, const char *needle)
+    {
+        if(haystack && needle) for(const char *h = haystack, *n = needle;;)
+            {
+            int hc = cubelower(*h++), nc = cubelower(*n++);
+            if(!nc) return (char*)h - (n - needle);
+            if(hc != nc)
+            {
+                if(!hc) break;
+                n = needle;
+                h = ++haystack;
+            }
+        }
+        return NULL;
+    }
+
+    SVAR(filterservers, "");
+
 
     bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
     {
+        
+        if (*filterservers) {
+            if (!cubecasefind(sdesc, filterservers) &&
+            !cubecasefind(map, filterservers) &&
+            (attr.length() < 2 || !cubecasefind(server::modename(attr[1], ""), filterservers))) {
+            return false;
+            }
+        }
+
+
         if(ping < 0 || attr.empty() || attr[0]!=PROTOCOL_VERSION)
         {
             switch(i)
