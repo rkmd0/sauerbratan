@@ -296,6 +296,8 @@ namespace game
     VARP(savestats, 0, 1, 1);
 
     VARP(totalplaytime, 0, 0, INT_MAX);
+    VARP(totalspectime, 0, 0, INT_MAX);
+    //VARP(totaldemotime, 0, 0, INT_MAX); // maybe for modes etc
     VARP(totalfrags, INT_MIN, 0, INT_MAX);
     VARP(totaldeaths, INT_MIN, 0, INT_MAX);
     VARP(totalflags, 0, 0, INT_MAX);
@@ -308,10 +310,14 @@ namespace game
             int cursecs = (totalmillis - lastsec) / 1000;
             totalplaytime += cursecs;
             lastsec += cursecs * 1000;
+            if(player1->state == CS_SPECTATOR) {
+                totalspectime += cursecs;
+
+            }
         }
     }
 
-    void resetlocalstats()
+    void resetlocalstats() // rework on this too
     {
         totalplaytime = 0;
         totalfrags = 0;
@@ -319,18 +325,32 @@ namespace game
         totalflags = 0;
     }
 
-    void localstats()
+void formatTime(int totalSeconds, int &hours, int &minutes, int &seconds)
+{
+    hours = totalSeconds / 3600;
+    totalSeconds -= hours * 3600;
+    minutes = totalSeconds / 60;
+    totalSeconds -= minutes * 60;
+    seconds = totalSeconds;
+}
+
+void localstats() // rework on this - add var possibility (more advanced stats etc)
+{
+    int hoursPlayed, minutesPlayed, secondsPlayed;
+    int hoursSpectated, minutesSpectated, secondsSpectated;
+
+    formatTime(totalplaytime, hoursPlayed, minutesPlayed, secondsPlayed);
+    formatTime(totalspectime, hoursSpectated, minutesSpectated, secondsSpectated);
+
+    if (!savestats) conoutf("Local stats are currently disabled");
+    else
     {
-        int seconds = totalplaytime;
-        int days = seconds / 86400;
-        seconds -= days * 86400;
-        int hours = seconds / 3600;
-        seconds -= hours * 3600;
-        int minutes = seconds / 60;
-        seconds -= minutes * 60;
-        if(!savestats) conoutf("Local stats are currently disabled");
-        else conoutf("Total stats: %02d:%02d:%02d played, %d frags, %d deaths, %.2f K/D, %d flags", hours, minutes, seconds, totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths * 1.f : 1.00f), totalflags);
+        conoutf("Total stats: %02d:%02d:%02d played, %02d:%02d:%02d spectated, %d frags, %d deaths, %.2f K/D, %d flags, Session Duration: %02d:%02d:%02d",
+            hoursPlayed, minutesPlayed, secondsPlayed, hoursSpectated, minutesSpectated, secondsSpectated,
+            totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths * 1.f : 1.00f), totalflags,
+            totalmillis / 3600000, (totalmillis % 3600000) / 60000, (totalmillis % 60000) / 1000);
     }
+}
 
     ICOMMAND(localstats, "", (), localstats());
     ICOMMAND(resetlocalstats, "", (), resetlocalstats());

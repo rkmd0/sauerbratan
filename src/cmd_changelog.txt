@@ -23,6 +23,12 @@ VARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
 VARP(savestats, 0, 1, 1);
 ->  ICOMMAND(localstats, "", (), printlocalstats());
     ICOMMAND(resetlocalstats, "", (), resetlocalstats());
+    VARP(totalplaytime, 0, 0, INT_MAX);
+    VARP(totalspectime, 0, 0, INT_MAX);
+    //VARP(totaldemotime, 0, 0, INT_MAX); // maybe for modes etc
+    VARP(totalfrags, INT_MIN, 0, INT_MAX);
+    VARP(totaldeaths, INT_MIN, 0, INT_MAX);
+    VARP(totalflags, 0, 0, INT_MAX);
 timestamp on log.txt creating an unique file for each session
 VARP(showflags, 0, 1, 1); // showing flag count, if the respective player has any, next to the fragcount (frags/flags)
 
@@ -33,8 +39,9 @@ make an extra column for flags - hideflags?
 
 TODO kinda but already did
 change colors (fgcolor) to 'normal'
-gui changes are neat whatsoever but lets just stay on vanilla
+gui changes are neat whatsoever but lets just stay on vanilla - done
 add filterserver for server search
--> add menu before
+    -> add menu before
 showclientnum 2 but fixed
 update localstats - probably broken in some way but whateva
+    -> add more features
