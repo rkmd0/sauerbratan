@@ -2073,7 +2073,7 @@ void cleardamagescreen()
 }
 
 VAR(hidestats, 0, 0, 1);
-VAR(hidehud, 0, 0, 1);
+VAR(hidehud, 0, 0, 2);
 
 VARP(crosshairsize, 0, 15, 50);
 VARP(cursorsize, 0, 30, 50);
@@ -2123,7 +2123,7 @@ void writecrosshairs(stream *f)
 void drawcrosshair(int w, int h)
 {
     bool windowhit = g3d_windowhit(true, false);
-    if(!windowhit && (hidehud || mainmenu)) return; //(hidehud || player->state==CS_SPECTATOR || player->state==CS_DEAD)) return;
+    if(!windowhit && (hidehud == 1 || mainmenu)) return; //(hidehud || player->state==CS_SPECTATOR || player->state==CS_DEAD)) return;
 
     vec color(1, 1, 1);
     float cx = 0.5f, cy = 0.5f, chsize;

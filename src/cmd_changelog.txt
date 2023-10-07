@@ -32,6 +32,7 @@ VARP(savestats, 0, 1, 1);
 timestamp on log.txt creating an unique file for each session
 VARP(showflags, 0, 1, 1); // showing flag count, if the respective player has any, next to the fragcount (frags/flags)
 filterserver - way to search for servers (mode, map or description)
+VAR(hidehud, 0, 0, 2); // draw crosshair but disable hud -> 1 = disable hud, 2 = disable hud but show crosshair
 
 
 TODO
@@ -42,3 +43,8 @@ TODO kinda but already did
 showclientnum 2 but fixed
 update localstats - probably broken in some way but whateva
     -> add more features
+addfriend (cn) based?
+    just marking other players like 'highlightscore' does?
+hudscore showing flag if flag is taken?
+improved fragmsg - add other events?
+clientsided name saver (for player1 only)
