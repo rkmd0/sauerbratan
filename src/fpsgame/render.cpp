@@ -13,6 +13,7 @@ namespace game
     VARP(ragdollfade, 0, 1000, 300000);
     VARFP(playermodel, 0, 0, 4, changedplayermodel());
     VARP(forceplayermodels, 0, 0, 1);
+    VARP(setplayermodel, -1, -1, 4);
     VARP(hidedead, 0, 0, 2);
 
     vector<fpsent *> ragdolls;
@@ -66,7 +67,17 @@ namespace game
 
     const playermodelinfo *getplayermodelinfo(int n)
     {
-        if(size_t(n) >= sizeof(playermodels)/sizeof(playermodels[0])) return NULL;
+        switch(setplayermodel)
+        {
+            case 0: setplayermodel = 0; break;
+            case 1: setplayermodel = 1; break;
+            case 2: setplayermodel = 2; break;
+            case 3: setplayermodel = 3; break;
+            case 4: setplayermodel = 4; break;
+        }
+        const playermodelinfo *mdl = getplayermodelinfo(d==player1 || forceplayermodels ? playermodel : setplayermodel > -1 ? setplayermodel : d->playermodel);
+        if(!mdl) mdl = getplayermodelinfo(forceplayermodels ? playermodel : setplayermodel > -1 ? setplayermodel : playermodel);
+
         return &playermodels[n];
     }
 
@@ -85,7 +96,7 @@ namespace game
         {
             fpsent *d = ragdolls[i];
             if(!d->ragdoll) continue;
-            if(!forceplayermodels)
+            if(!forceplayermodels || (!forceplayermodels && setplayermodel < 0))
             {
                 const playermodelinfo *mdl = getplayermodelinfo(d->playermodel);
                 if(mdl) continue;
@@ -96,7 +107,7 @@ namespace game
         {
             fpsent *d = players[i];
             if(d == player1 || !d->ragdoll) continue;
-            if(!forceplayermodels)
+            if(!forceplayermodels || (!forceplayermodels && setplayermodel < 0))
             {
                 const playermodelinfo *mdl = getplayermodelinfo(d->playermodel);
                 if(mdl) continue;

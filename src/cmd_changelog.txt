@@ -33,6 +33,7 @@ timestamp on log.txt creating an unique file for each session
 VARP(showflags, 0, 1, 1); // showing flag count, if the respective player has any, next to the fragcount (frags/flags)
 filterserver - way to search for servers (mode, map or description)
 VAR(hidehud, 0, 0, 2); // draw crosshair but disable hud -> 1 = disable hud, 2 = disable hud but show crosshair
+VARP(setplayermodel, -1, -1, 4); // force different playermodels - -1 is default
 
 
 TODO
