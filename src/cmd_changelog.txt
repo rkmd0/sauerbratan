@@ -46,13 +46,14 @@ add server preview - modifiy stuff there (extinfo)
 improve/update weaponaccuracy
 upload modvar (special config for client)
 update scoreboard - alternative etc...
+    add highlightscore 2 - loopspecs etc
 improve fragmsg!!!! - reference p1xbraten etc
 add usemymenu - like usep1xbraten menu reference
 MOD(VARFP, usep1xbratenmenus, 0, 1, 1, {
         if(usep1xbratenmenus) execfile(menus_cfg.name);
         else execfile("data/menus.cfg");
     }); ?
-
+make timestamp on logfile src sided? ref:hsc
 update scoreboard - ping/modelicon/etc
 
 TODO kinda but already did

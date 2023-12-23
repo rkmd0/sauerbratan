@@ -67,6 +67,13 @@ namespace game
 
     const playermodelinfo *getplayermodelinfo(int n)
     {
+        if(size_t(n) >= sizeof(playermodels)/sizeof(playermodels[0])) return NULL;
+        return &playermodels[n];
+    }
+
+
+    const playermodelinfo &getplayermodelinfo(fpsent *d)
+    {
         switch(setplayermodel)
         {
             case 0: setplayermodel = 0; break;
@@ -77,16 +84,9 @@ namespace game
         }
         const playermodelinfo *mdl = getplayermodelinfo(d==player1 || forceplayermodels ? playermodel : setplayermodel > -1 ? setplayermodel : d->playermodel);
         if(!mdl) mdl = getplayermodelinfo(forceplayermodels ? playermodel : setplayermodel > -1 ? setplayermodel : playermodel);
-
-        return &playermodels[n];
-    }
-
-    const playermodelinfo &getplayermodelinfo(fpsent *d)
-    {
-        const playermodelinfo *mdl = getplayermodelinfo(d==player1 || forceplayermodels ? playermodel : d->playermodel);
-        if(!mdl) mdl = getplayermodelinfo(playermodel);
         return *mdl;
     }
+
 
     void changedplayermodel()
     {
