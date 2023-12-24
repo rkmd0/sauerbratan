@@ -61,5 +61,50 @@ namespace game {
     }
     DAMAGECOMMAND(getaccuracy, floatret(playeraccuracy(p, gun)))
 
+    // clientsided stats command
+
+    int roundaccuracy(float accuracy) { return static_cast<int>(accuracy + 0.5); }
+
+    void printPlayerStats(fpsent *player) {
+        if (!player) return;
+
+        int gun = player->gunselect;
+        conoutf("stats: %s: frags: %d, flags: %d, deaths: %d, accuracy(%%): %.2f, kpd: %.3f",
+            player->name,
+            player->frags,
+            player->flags,
+            player->deaths,
+            game::playeraccuracy(player),
+            (player->deaths > 0) ? (float)player->frags / player->deaths : player->frags);
+
+        if (!m_insta) {
+            conoutf("\tSG: %d%% CG: %d%% RL: %d%% RI: %d%% GL: %d%%",
+                roundaccuracy(game::playeraccuracy(player, GUN_SG)),
+                roundaccuracy(game::playeraccuracy(player, GUN_CG)),
+                roundaccuracy(game::playeraccuracy(player, GUN_RL)),
+                roundaccuracy(game::playeraccuracy(player, GUN_RIFLE)),
+                roundaccuracy(game::playeraccuracy(player, GUN_GL)));
+        }
+    }
+
+    int clientnum;
+    ICOMMAND(stats, "i", (int *cn), {
+        clientnum = *cn;
+        if(!clientnum) printPlayerStats(player1);
+            else if(clientnum == -1) {
+                loopv(players) {
+                    fpsent *player = players[i];
+                    if (player) {
+                        printPlayerStats(player);
+                    }
+                }
+        }
+        else {
+            fpsent *player = getclient(clientnum);
+            if(!player) conoutf("\f6Player not found.");
+            printPlayerStats(player);
+
+        }
+    });
 
 }

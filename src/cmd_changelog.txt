@@ -34,16 +34,19 @@ VARP(showflags, 0, 1, 1); // showing flag count, if the respective player has an
 filterserver - way to search for servers (mode, map or description)
 VAR(hidehud, 0, 0, 2); // draw crosshair but disable hud -> 1 = disable hud, 2 = disable hud but show crosshair
 VARP(setplayermodel, -1, -1, 4); // force different playermodels - -1 is default
+ICOMMAND(stats, "i", (int *cn) ... ); // show stats of a player1 (differs between insta and no insta mode)
+    /stats - player1 stats
+    /stats -1 all players stats
+    /stats <cn> - cn's stats
+
 
 
 TODO
 change colors for scoreboard
 make an extra column for flags - hideflags?
 birthday saver? (hash set test)
-fix setplayermodel
 clientsided demos!!!!
 add server preview - modifiy stuff there (extinfo)
-improve/update weaponaccuracy
 upload modvar (special config for client)
 update scoreboard - alternative etc...
     add highlightscore 2 - loopspecs etc
@@ -65,4 +68,6 @@ addfriend (cn) based?
 hudscore showing flag if flag is taken?
 improved fragmsg - add other events?
 clientsided name saver (for player1 only)
+TODO: format redo (colors), maybe rework on function aswell? (stats command)
+TODO: scoreboard should show specific icons (ogroonly, etc), meaning ignore all the rest
 
