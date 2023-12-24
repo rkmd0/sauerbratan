@@ -1,5 +1,6 @@
 // creation of scoreboard
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game
 {
@@ -21,6 +22,7 @@ namespace game
     VARP(showspecicons, 0, 1, 1);
     VARP(showctfflagicons, 0, 1, 1);
     VARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
+    
     static hashset<teaminfo> teaminfos;
 
     void clearteaminfo()

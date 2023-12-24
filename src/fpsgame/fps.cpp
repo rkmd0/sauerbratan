@@ -609,11 +609,11 @@ void localstats() // rework on this - add var possibility (more advanced stats e
         }
     }
 
-    ICOMMAND(getfrags, "", (), intret(hudplayer()->frags));
-    ICOMMAND(getflags, "", (), intret(hudplayer()->flags));
-    ICOMMAND(getdeaths, "", (), intret(hudplayer()->deaths));
-    ICOMMAND(gettotaldamage, "", (), intret(playerdamage(NULL, DMG_DEALT)));
-    ICOMMAND(gettotalshots, "", (), intret(playerdamage(NULL, DMG_POTENTIAL)));
+    PLAYER_VARGS_ICOMMAND(getfrags, intret(p->frags));
+    PLAYER_VARGS_ICOMMAND(getflags, intret(p->flags));
+    PLAYER_VARGS_ICOMMAND(getdeaths, intret(p->deaths));
+    PLAYER_VARGS_ICOMMAND(gettotaldamage, intret(playerdamage(p, DMG_DEALT)));
+    PLAYER_VARGS_ICOMMAND(gettotalshots, intret(playerdamage(p, DMG_POTENTIAL)));
 
     vector<fpsent *> clients;
 

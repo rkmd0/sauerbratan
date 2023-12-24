@@ -869,7 +869,7 @@ namespace game
     extern void swayhudgun(int curtime);
     extern vec hudgunorigin(int gun, const vec &from, const vec &to, fpsent *d);
 }
-#include "weaponstats.h"
+
 
 namespace server
 {
