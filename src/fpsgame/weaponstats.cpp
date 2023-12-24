@@ -1,4 +1,5 @@
 #include "game.h"
+#include "weaponstats.h"
 
 namespace game {
     void recordpotentialdamage(fpsent *shooter)
