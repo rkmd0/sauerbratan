@@ -38,6 +38,7 @@ ICOMMAND(stats, "i", (int *cn) ... ); // show stats of a player1 (differs betwee
     /stats - player1 stats
     /stats -1 all players stats
     /stats <cn> - cn's stats
+VARP(advancedfragmsgcoloring, 0, 0, 1); // switch between no coloring and yes coloring (ctf will have teamcolor regardless)
 
 
 
@@ -51,6 +52,7 @@ upload modvar (special config for client)
 update scoreboard - alternative etc...
     add highlightscore 2 - loopspecs etc
 improve fragmsg!!!! - reference p1xbraten etc
+    - coloring done - ref advancedfragmsgcoloring
 add usemymenu - like usep1xbraten menu reference
 MOD(VARFP, usep1xbratenmenus, 0, 1, 1, {
         if(usep1xbratenmenus) execfile(menus_cfg.name);
@@ -58,7 +60,7 @@ MOD(VARFP, usep1xbratenmenus, 0, 1, 1, {
     }); ?
 make timestamp on logfile src sided? ref:hsc
 update scoreboard - ping/modelicon/etc
-
+fix spec teleport (only at following)
 TODO kinda but already did
 showclientnum 2 but fixed
 update localstats - probably broken in some way but whateva
@@ -68,6 +70,6 @@ addfriend (cn) based?
 hudscore showing flag if flag is taken?
 improved fragmsg - add other events?
 clientsided name saver (for player1 only)
-TODO: format redo (colors), maybe rework on function aswell? (stats command)
+TODO: format redo (colors), maybe rework on function aswell? (stats command) - -2 ignores spec stats?
 TODO: scoreboard should show specific icons (ogroonly, etc), meaning ignore all the rest
 

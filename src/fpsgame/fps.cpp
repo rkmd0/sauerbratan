@@ -529,6 +529,7 @@ void localstats() // rework on this - add var possibility (more advanced stats e
     }
 
     VARP(teamcolorfrags, 0, 1, 1);
+    VARP(advancedfragmsgcoloring, 0, 0, 1);
 
     void killed(fpsent *d, fpsent *actor)
     {
@@ -572,10 +573,23 @@ void localstats() // rework on this - add var possibility (more advanced stats e
             if(d==player1) conoutf(contype, "\f2%s got fragged by %s", dname, aname);
             else conoutf(contype, "\f2%s fragged %s", aname, dname);
         }
+        // NEW
+        if (advancedfragmsgcoloring)
+        {
+            if (!m_teammode)
+            {
+                dname = colorname(d, NULL, d == h ? "\fs\f1" : "\fs\f3", "\fr", NULL);
+                aname = colorname(actor, NULL, actor == h ? "\fs\f1" : "\fs\f3", "\fr", NULL);
+            }
+
+            if (h == player1 && d == player1) dname = "\fs\f2you\fr";
+            if (h == player1 && actor == player1) aname = "\fs\f2you\fr";
+        }
         if(d==h || actor==h) {
             if(d==actor) addfragmessage(NULL, dname, HICON_TOKEN-HICON_FIST);
             else addfragmessage(aname, dname, d->lasthitpushgun);
         }
+        // NEW END
 
         deathstate(d);
 		ai::killed(d, actor);
