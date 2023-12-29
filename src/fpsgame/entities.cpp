@@ -335,7 +335,7 @@ namespace entities
     {
         //if(d->state!=CS_ALIVE) return;
         vec o = d->feetpos();
-        if(d->state==CS_SPECTATOR) loopv(ents)
+        if(d->state==CS_SPECTATOR && following<0) loopv(ents) // dead players' model triggers teleport sound
         {
             extentity &e = *ents[i];
             if(e.type==TELEPORT && e.o.dist(o)<16) trypickup(i, d);
