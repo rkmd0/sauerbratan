@@ -788,6 +788,7 @@ namespace game
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
     extern int hasflag(fpsent *d);
+    extern int hasflagForTeam(const char* team);
 
     // monster
     struct monster;

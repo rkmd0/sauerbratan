@@ -76,6 +76,7 @@ namespace game
     extern void rendergame(bool mainpass);
     extern void renderavatar();
     extern void renderplayerpreview(int model, int team, int weap);
+    extern bool renderstatsdisplay(int conw, int conh,int woffset, int FONTH, int roffset);
     extern void writegamedata(vector<char> &extras);
     extern void readgamedata(vector<char> &extras);
     extern int clipconsole(int w, int h);

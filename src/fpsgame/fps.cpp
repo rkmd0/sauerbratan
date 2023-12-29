@@ -1260,6 +1260,184 @@ void localstats() // rework on this - add var possibility (more advanced stats e
         }
     }
 
+    // highly experimental stuff below
+
+    VARP(hudstats, 0, 1, 1);
+
+    void fillICharArray(char result[], int count) {
+        for (int i = 0; i < count; ++i) {
+            result[i] = 'I';
+        }
+        result[count] = '\0';  // null-terminate the string
+    }
+    
+    VARP(playercounter, 0, 1, 1);
+
+    void renderAlivePlayersByTeam(int conw, int conh, int roffset, int FONTH) {
+        if(!playercounter) return;
+        //if (!m_teammode) { return; }
+
+        int goodCount = 0;
+        int evilCount = 0;
+        int othermode = 0;
+
+        loopv(players) {
+            fpsent *d = players[i];
+
+            // check if the player is valid and not in spectator or dead state
+            if (d && d->state != CS_SPECTATOR && d->state != CS_DEAD) {
+                if (m_teammode) {
+                    // in team mode, count players in "good" or "evil" teams
+                    if (!strcasecmp("good", d->team)) {
+                        goodCount++;
+                    } else if (!strcasecmp("evil", d->team)) {
+                        evilCount++;
+                    }
+                } else {
+                    // in non-team mode, count all players
+                    othermode++;
+                }
+            }
+        }
+
+        char igoodcount[goodCount + 1];  // +1 for null-terminator
+        char ievilcount[evilCount + 1];  // +1 for null-terminator
+        char othercount[othermode + 1];  // +1 for blablabla
+
+
+        // Fill the arrays with 'I' characters
+        fillICharArray(igoodcount, goodCount);
+        fillICharArray(ievilcount, evilCount);
+        fillICharArray(othercount, othermode);
+
+        const char* player1Team = hudplayer()->team; // local
+
+
+        // calculate the vertical position based on the height of the session timer
+        int sessionTimerHeight = FONTH * 3 / 2;  // assuming this is the height of the session timer
+        int verticalPosition = conh - roffset - sessionTimerHeight / 2;
+        int goodFlagStatus = hasflagForTeam("good");
+        int evilFlagStatus = hasflagForTeam("evil");
+
+
+        // draw the number of alive players for each team
+        if(m_teammode) {
+            draw_textf("%*s (%d)", conw-5*FONTH - 900, conh-FONTH*3/2-roffset, goodCount, igoodcount, goodCount);
+            draw_textf("%*s (%d)", conw-5*FONTH - 900, conh-FONTH*3/2, evilCount, ievilcount, evilCount);
+            draw_textf("%sgood:", conw-5*FONTH - 1075, conh-FONTH*3/2-roffset, strcmp(hudplayer()->team, "good") ? "\f3" : "\f1");
+            draw_textf("%sevil:", conw - 5 * FONTH - 1075, conh - FONTH * 3 / 2, strcmp(hudplayer()->team, "evil") ? "\f3" : "\f1");
+            draw_textf("%s", conw-5*FONTH - 1150, conh-FONTH*3/2-roffset, goodFlagStatus ? "\xF2" : "");
+            draw_textf("%s", conw - 5 * FONTH - 1150, conh - FONTH * 3 / 2, evilFlagStatus ? "\xF2" : "");
+        }
+        else {
+            draw_textf("%*s (%d)", conw-5*FONTH - 900, conh-FONTH*3/2, othermode, othercount, othermode);
+            draw_textf("alive:", conw - 5 * FONTH - 1075, conh - FONTH * 3 / 2);
+
+        }
+
+    }
+
+    VARP(sessionlendisplay, 0, 1, 1);
+
+    void formatTime(int seconds, char *output, int size) {
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        int remaining_seconds = seconds % 60;
+        snprintf(output, size, "%02d:%02d:%02d", hours, minutes, remaining_seconds);
+    }
+
+    // function to render the session timer - works just like sessionlen cmd
+    void renderSessionTimer(int conw, int conh, int FONTH, int roffset) {
+        if(!sessionlendisplay) return;
+        int total_time_seconds = lastmillis / 1000;
+        char session_timer[256];
+        formatTime(total_time_seconds, session_timer, sizeof(session_timer));
+
+        draw_text(session_timer, conw - 10 * FONTH - 10, conh-FONTH*3/2);
+    }
+
+    int roundaccuracy(float accuracy) { return static_cast<int>(accuracy + 0.5); }
+
+    VARP(showweaponstats, 0, 1, 1);
+
+    bool renderweaponstats(int conw, int conh, int woffset, int FONTH, int roffset) {
+        if (!hudstats) return false;
+
+        fpsent *d = hudplayer();
+        if (!d) return false;
+
+        // check if weapon stats should be displayed
+        if (!showweaponstats) {
+            // draw only the general stats if weapon stats should not be displayed
+            int playerfrags = d->frags;
+            int playerdeaths = d->deaths;
+            float playeraccuracy = game::playeraccuracy(d);
+            float kpd = (playerdeaths > 0) ? static_cast<float>(playerfrags) / playerdeaths : playerfrags;
+
+            // format the general stats string
+            char stats[256];
+            snprintf(stats, sizeof(stats), "\f7frags: \f0%d \f7deaths: \f3%d \f7accuracy: \f2%.2f%% \f7kpd: \f5%.3f", playerfrags, playerdeaths, playeraccuracy, kpd);
+
+            // get the width of the general stats line
+            int tw = text_width(stats);
+
+            draw_text(stats, conw - max(5 * FONTH, 2 * FONTH + tw) - woffset + 75, conh - FONTH * 3 / 2 - roffset - FONTH);
+
+            return true;
+        }
+
+        // if weapon stats should be displayed, proceed with rendering all lines
+
+        // first line: Weapon accuracy
+        char weapacc[256];
+        snprintf(weapacc, sizeof(weapacc), "\f7SG: \f1%d%% \f7CG: \f1%d%% \f7RL: \f1%d%% \f7RI: \f1%d%% \f7GL: \f1%d%%",
+                    roundaccuracy(game::playeraccuracy(d, GUN_SG)),
+                    roundaccuracy(game::playeraccuracy(d, GUN_CG)),
+                    roundaccuracy(game::playeraccuracy(d, GUN_RL)),
+                    roundaccuracy(game::playeraccuracy(d, GUN_RIFLE)),
+                    roundaccuracy(game::playeraccuracy(d, GUN_GL)));
+
+        // second line: Weapon damages
+        char weapdmg[256];
+        snprintf(weapdmg, sizeof(weapdmg), "\f7SG: \f1%d \f7CG: \f1%d \f7RL: \f1%d \f7RI: \f1%d \f7GL: \f1%d",
+                    (game::playerdamage(d, DMG_DEALT, GUN_SG)),
+                    (game::playerdamage(d, DMG_DEALT, GUN_CG)),
+                    (game::playerdamage(d, DMG_DEALT, GUN_RL)),
+                    (game::playerdamage(d, DMG_DEALT, GUN_RIFLE)),
+                    (game::playerdamage(d, DMG_DEALT, GUN_GL)));
+
+        // third line: General stats -- player should be able to turn off the rest
+        int playerfrags = d->frags;
+        int playerdeaths = d->deaths;
+        float playeraccuracy = game::playeraccuracy(d);
+        float kpd = (playerdeaths > 0) ? static_cast<float>(playerfrags) / playerdeaths : playerfrags;
+
+        // format the general stats string
+        char stats[256];
+        snprintf(stats, sizeof(stats), "\f7frags: \f0%d \f7deaths: \f3%d \f7accuracy: \f2%.2f%% \f7kpd: \f5%.3f", playerfrags, playerdeaths, playeraccuracy, kpd);
+
+        // get the width of the longest line
+        int tw = max(max(text_width(stats), text_width(weapacc)), text_width(weapdmg));
+        
+        // weaponstats not needed in insta mode
+        if (!m_insta) draw_text(weapacc, conw - max(5 * FONTH, 2 * FONTH + tw) - woffset + 300, conh - FONTH * 3 / 2 - roffset - 3 * FONTH);
+
+        if (!m_insta) draw_text(weapdmg, conw - max(5 * FONTH, 2 * FONTH + tw) - woffset + 350, conh - FONTH * 3 / 2 - roffset - 2 * FONTH);
+
+        draw_text(stats, conw - max(5 * FONTH, 2 * FONTH + tw) - woffset + 75, conh - FONTH * 3 / 2 - roffset - FONTH);
+
+        return true;
+    }
+
+    bool renderstatsdisplay(int conw, int conh, int woffset, int FONTH, int roffset){
+        renderweaponstats(conw, conh, woffset, FONTH, roffset);
+        renderSessionTimer(conw, conh, FONTH, roffset);
+        renderAlivePlayersByTeam(conw, conh, roffset, FONTH);
+        return true;
+    }
+
+    // end of experimental stuff
+
     int clipconsole(int w, int h)
     {
         if(cmode) return cmode->clipconsole(w, h);

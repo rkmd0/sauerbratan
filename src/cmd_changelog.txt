@@ -19,6 +19,7 @@ add fragmessages
     FVARP(fragmsgx, 0, 0.5f, 1.0f);
     FVARP(fragmsgy, 0, 0.15f, 1.0f);
     FVARP(fragmsgscale, 0, 0.5f, 1.0f);
+    VARP(advancedfragmsgcoloring, 0, 0, 1); // switch between no coloring and yes coloring (ctf will have teamcolor regardless)
 VARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
 VARP(savestats, 0, 1, 1);
 ->  ICOMMAND(localstats, "", (), printlocalstats());
@@ -38,7 +39,6 @@ ICOMMAND(stats, "i", (int *cn) ... ); // show stats of a player1 (differs betwee
     /stats - player1 stats
     /stats -1 all players stats
     /stats <cn> - cn's stats
-VARP(advancedfragmsgcoloring, 0, 0, 1); // switch between no coloring and yes coloring (ctf will have teamcolor regardless)
 VARP(flagmillis, 0, 0, 1);
     VARP(flagmillisx, 0, 0, 4500);
     VARP(flagmillisy, 0, 0, 2500);
@@ -47,6 +47,20 @@ VARP(flagmillis, 0, 0, 1);
     // flagsize is now scaled and translated - should be better?
     // flagtimer should be 0:000 if flag not taken TODO
     // flagtimer initial position is set to 0,0 ('top left corner') and only shows once flag is taken
+// various, neat, displayhud additions - gamehud = [] script should be obsolete now, but still usable
+VARP(hudstats, 0, 1, 1);            // will disable/enable weaponstats in general
+VARP(playercounter, 0, 1, 1);       // displays playercounter  -> if teammode 'good' and 'evil' (flagtaken also displayed) -> else just a 'alive' counter
+VARP(sessionlendisplay, 0, 1, 1);   // displays sessionlen in hud
+VARP(showweaponstats, 0, 1, 1);     // user should be able to disable advanced weaponstats - will, unlike 'hudstats', still render the general stats if turned off
+    // general comment about this:
+    // first 'real addition' to this client - needs to get tested, especially the hud allignment, since I was really bad in that department
+    // probably massively broken/bad/buggy in a way that is not tested by me, but it works for me so!
+    // stats uses p1xbraten weaponstats so demo will work TODO
+    // TODO: improve this all oh god please
+    //     -> review allignment
+    //     -> review colors
+    //     -> rewrite everything..
+
 
 
 

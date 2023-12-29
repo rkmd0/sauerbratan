@@ -122,6 +122,26 @@ namespace game
         return 0;
     }
 
+    // Function to check if a player in a specific team is carrying the flag
+    // Returns:
+    //   0 => no flag
+    //   1 => team good or neutral (m_hold)
+    //   2 => team evil
+    //   -1 => player is not in the specified team or does not have the flag
+    // r-right?
+    // ultimatly, really, just needed for hud in fps.cpp
+    int hasflagForTeam(const char* team) {
+        if (!m_ctf || !team) return 0;
+
+        loopv(ctfmode.flags) {
+            if (ctfmode.flags[i].owner && strcasecmp(ctfmode.flags[i].owner->team, team) == 0) {
+                return 1;  // Flag is taken by any player in the specified team
+            }
+        }
+
+        return 0;  // Flag is not taken for the specified team
+    }
+
     void setclientmode()
     {
         if(m_capture) cmode = &capturemode;

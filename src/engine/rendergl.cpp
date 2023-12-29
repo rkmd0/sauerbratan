@@ -2260,6 +2260,8 @@ void gl_drawhud()
                 else draw_textf("fps %d", conw-5*FONTH, conh-FONTH*3/2, curfps[0]);
                 roffset += FONTH;
             }
+            // fps.cpp
+            game::renderstatsdisplay(conw, conh, 220, FONTH, roffset);
 
             if(wallclock)
             {
