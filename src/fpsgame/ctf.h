@@ -544,6 +544,11 @@ struct ctfclientmode : clientmode
         return (h*(1 + 1 + 10))/(4*10);
     }
 
+    VARP(flagmillis, 0, 0, 1);
+    VARP(flagmillisx, 0, 0, 4500);
+    VARP(flagmillisy, 0, 0, 2500);
+    FVARP(flagmillissize, 0.1f, 0.5f, 10);
+
     void drawhud(fpsent *d, int w, int h)
     {
         if(d->state == CS_ALIVE)
@@ -561,6 +566,41 @@ struct ctfclientmode : clientmode
                     draw_textf("%d", (x + HICON_SIZE + HICON_SPACE)/2, HICON_TEXTY/2, max(HOLDSECS - f.holdcounter()/1000, 0));
                     pophudmatrix();
                 }
+                // initial code provided by neko 'cats are pretty neat' 
+                /*if (flagmillis)
+                {
+                    pushhudmatrix();
+                    hudmatrix.scale(flagmillissize, flagmillissize, 1);
+                    flushhudmatrix();
+
+                    int totalmill = lastmillis - f.owntime;
+                    int seconds = totalmill / 1000;
+                    int milliseconds = totalmill % 1000;
+
+                    draw_textf("%02d:%03d", flagmillisx, flagmillisy, seconds, milliseconds);
+
+                    pophudmatrix();
+                }*/
+                // the old code is not scaled and translated- changing the flagsize was influencing the position of the timer
+                if (flagmillis) {
+                    pushhudmatrix();
+
+                    // scale the text size
+                    hudmatrix.scale(flagmillissize, flagmillissize, 1);
+
+                    // translate based on the original coordinates
+                    hudmatrix.translate(flagmillisx / flagmillissize, flagmillisy / flagmillissize, 0);
+
+                    flushhudmatrix();
+
+                    int totalmill = lastmillis - f.owntime;
+                    int seconds = totalmill / 1000;
+                    int milliseconds = totalmill % 1000;
+                    draw_textf("%02d:%03d", flagmillisx, flagmillisy, seconds, milliseconds);  // draw at the scaled and translated position
+
+                    pophudmatrix();
+                }
+
                 break;
             }
         }

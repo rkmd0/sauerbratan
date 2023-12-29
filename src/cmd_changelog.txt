@@ -39,6 +39,14 @@ ICOMMAND(stats, "i", (int *cn) ... ); // show stats of a player1 (differs betwee
     /stats -1 all players stats
     /stats <cn> - cn's stats
 VARP(advancedfragmsgcoloring, 0, 0, 1); // switch between no coloring and yes coloring (ctf will have teamcolor regardless)
+VARP(flagmillis, 0, 0, 1);
+    VARP(flagmillisx, 0, 0, 4500);
+    VARP(flagmillisy, 0, 0, 2500);
+    FVARP(flagmillissize, 0.1f, 0.5f, 10);
+    // kind of not that nice, if flag not taken no sign, size also influences the x and y coordinates (which makes sense but duh)
+    // flagsize is now scaled and translated - should be better?
+    // flagtimer should be 0:000 if flag not taken TODO
+    // flagtimer initial position is set to 0,0 ('top left corner') and only shows once flag is taken
 
 
 
