@@ -408,9 +408,11 @@ namespace game
         conoutf("File %s has been created.", filename);
         //execfile(filename);
     }
+    
 
-
-    MODVARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
+    // kinda ugly, because 'https://github.com/sauerbraten/p1xbraten/issues/64' also happens
+    
+    VARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
         if (bratanmenu) {
             if (!execfile(create_menu_file)) { // create file if it doesnt exist
                 write_menu_config();
@@ -418,9 +420,10 @@ namespace game
             }
             execfile(create_menu_file);
         } else {
-            execfile("data/menus.cfg"); // kinda ugly, because 'https://github.com/sauerbraten/p1xbraten/issues/64' also happens albeit only once
+            execfile("data/menus.cfg"); 
         }
     });
+    
 
     // ugly end
 
