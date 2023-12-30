@@ -40,7 +40,7 @@ enum
 
 enum { ID_VAR, ID_FVAR, ID_SVAR, ID_COMMAND, ID_ALIAS, ID_LOCAL };
 
-enum { IDF_PERSIST = 1<<0, IDF_OVERRIDE = 1<<1, IDF_HEX = 1<<2, IDF_READONLY = 1<<3, IDF_OVERRIDDEN = 1<<4, IDF_UNKNOWN = 1<<5, IDF_ARG = 1<<6, IDF_EMUVAR = 1<<7 };
+enum { IDF_PERSIST = 1<<0, IDF_OVERRIDE = 1<<1, IDF_HEX = 1<<2, IDF_READONLY = 1<<3, IDF_OVERRIDDEN = 1<<4, IDF_UNKNOWN = 1<<5, IDF_ARG = 1<<6, IDF_EMUVAR = 1<<7, IDF_MOD = 1<<8 };
 
 struct ident;
 
@@ -332,4 +332,46 @@ inline void ident::getval(tagval &v) const
 #define ICOMMAND(name, nargs, proto, b) ICOMMANDN(name, ICOMMANDNAME(name), nargs, proto, b)
 #define ICOMMANDSNAME _icmds_
 #define ICOMMANDS(name, nargs, proto, b) ICOMMANDNS(name, ICOMMANDSNAME, nargs, proto, b)
+
+// mod macro's - add as needed
+#define MODVARN(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_MOD)
+#define MODVARNP(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_PERSIST|IDF_MOD)
+#define MODVARNR(name, global, min, cur, max) _VAR(name, global, min, cur, max, IDF_OVERRIDE|IDF_MOD)
+#define MODVAR(name, min, cur, max) _VAR(name, name, min, cur, max, IDF_MOD)
+#define MODVARP(name, min, cur, max) _VAR(name, name, min, cur, max, IDF_PERSIST|IDF_MOD)
+#define MODVARFN(name, global, min, cur, max, body) _VARF(name, global, min, cur, max, body, IDF_MOD)
+#define MODVARF(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_MOD)
+#define MODVARFP(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_PERSIST|IDF_MOD)
+#define MODVARFR(name, min, cur, max, body) _VARF(name, name, min, cur, max, body, IDF_OVERRIDE|IDF_MOD)
+#define MODHVARN(name, global, min, cur, max) _HVAR(name, global, min, cur, max, IDF_MOD)
+#define MODHVARNP(name, global, min, cur, max) _HVAR(name, global, min, cur, max, IDF_PERSIST|IDF_MOD)
+#define MODHVARNR(name, global, min, cur, max) _HVAR(name, global, min, cur, max, IDF_OVERRIDE|IDF_MOD)
+#define MODHVAR(name, min, cur, max) _HVAR(name, name, min, cur, max, IDF_MOD)
+#define MODHVARP(name, min, cur, max) _HVAR(name, name, min, cur, max, IDF_PERSIST|IDF_MOD)
+#define MODHVARR(name, min, cur, max) _HVAR(name, name, min, cur, max, IDF_OVERRIDE|IDF_MOD)
+#define MODHVARFN(name, global, min, cur, max, body) _HVARF(name, global, min, cur, max, body, IDF_MOD)
+#define MODHVARF(name, min, cur, max, body) _HVARF(name, name, min, cur, max, body, IDF_MOD)
+#define MODHVARFP(name, min, cur, max, body) _HVARF(name, name, min, cur, max, body, IDF_PERSIST|IDF_MOD)
+#define MODHVARFR(name, min, cur, max, body) _HVARF(name, name, min, cur, max, body, IDF_OVERRIDE|IDF_MOD)
+#define MODFVARN(name, global, min, cur, max) _FVAR(name, global, min, cur, max, IDF_MOD)
+#define MODFVARNP(name, global, min, cur, max) _FVAR(name, global, min, cur, max, IDF_PERSIST|IDF_MOD)
+#define MODFVARNR(name, global, min, cur, max) _FVAR(name, global, min, cur, max, IDF_OVERRIDE|IDF_MOD)
+#define MODFVAR(name, min, cur, max) _FVAR(name, name, min, cur, max, IDF_MOD)
+#define MODFVARP(name, min, cur, max) _FVAR(name, name, min, cur, max, IDF_PERSIST|IDF_MOD)
+#define MODFVARR(name, min, cur, max) _FVAR(name, name, min, cur, max, IDF_OVERRIDE|IDF_MOD)
+#define MODFVARFN(name, global, min, cur, max, body) _FVARF(name, global, min, cur, max, body, IDF_MOD)
+#define MODFVARF(name, min, cur, max, body) _FVARF(name, name, min, cur, max, body, IDF_MOD)
+#define MODFVARFP(name, min, cur, max, body) _FVARF(name, name, min, cur, max, body, IDF_PERSIST|IDF_MOD)
+#define MODFVARFR(name, min, cur, max, body) _FVARF(name, name, min, cur, max, body, IDF_OVERRIDE|IDF_MOD)
+#define MODSVARN(name, global, cur) _SVAR(name, global, cur, IDF_MOD)
+#define MODSVARNP(name, global, cur) _SVAR(name, global, cur, IDF_PERSIST|IDF_MOD)
+#define MODSVARNR(name, global, cur) _SVAR(name, global, cur, IDF_OVERRIDE|IDF_MOD)
+#define MODSVAR(name, cur) _SVAR(name, name, cur, IDF_MOD)
+#define MODSVARP(name, cur) _SVAR(name, name, cur, IDF_PERSIST|IDF_MOD)
+#define MODSVARR(name, cur) _SVAR(name, name, cur, IDF_OVERRIDE|IDF_MOD)
+#define MODSVARFN(name, global, cur, body) _SVARF(name, global, cur, body, IDF_MOD)
+#define MODSVARF(name, cur, body) _SVARF(name, name, cur, body, IDF_MOD)
+#define MODSVARFP(name, cur, body) _SVARF(name, name, cur, body, IDF_PERSIST|IDF_MOD)
+#define MODSVARFR(name, cur, body) _SVARF(name, name, cur, body, IDF_OVERRIDE|IDF_MOD)
+
  

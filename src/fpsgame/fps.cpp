@@ -293,14 +293,14 @@ namespace game
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 
-    VARP(savestats, 0, 1, 1);
+    MODVARP(savestats, 0, 1, 1);
 
-    VARP(totalplaytime, 0, 0, INT_MAX);
-    VARP(totalspectime, 0, 0, INT_MAX);
+    MODVARP(totalplaytime, 0, 0, INT_MAX);
+    MODVARP(totalspectime, 0, 0, INT_MAX);
     //VARP(totaldemotime, 0, 0, INT_MAX); // maybe for modes etc
-    VARP(totalfrags, INT_MIN, 0, INT_MAX);
-    VARP(totaldeaths, INT_MIN, 0, INT_MAX);
-    VARP(totalflags, 0, 0, INT_MAX);
+    MODVARP(totalfrags, INT_MIN, 0, INT_MAX);
+    MODVARP(totaldeaths, INT_MIN, 0, INT_MAX);
+    MODVARP(totalflags, 0, 0, INT_MAX);
 
     void playtime()
     {
@@ -410,7 +410,7 @@ namespace game
     }
 
 
-    VARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
+    MODVARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
         if (bratanmenu) {
             if (!execfile(create_menu_file)) { // create file if it doesnt exist
                 write_menu_config();
@@ -598,7 +598,7 @@ namespace game
     }
 
     VARP(teamcolorfrags, 0, 1, 1);
-    VARP(advancedfragmsgcoloring, 0, 0, 1);
+    MODVARP(advancedfragmsgcoloring, 0, 0, 1);
 
     void killed(fpsent *d, fpsent *actor)
     {
@@ -1216,13 +1216,13 @@ namespace game
 
     vector<fragmessage> fragmessages; // oldest first, newest at the end
 
-    VARP(fragmsg, 0, 0, 2);
-    VARP(fragmsgmax, 1, 3, 10);
-    VARP(fragmsgmillis, 0, 3000, 10000);
-    VARP(fragmsgfade, 0, 1, 1);
-    FVARP(fragmsgx, 0, 0.5f, 1.0f);
-    FVARP(fragmsgy, 0, 0.15f, 1.0f);
-    FVARP(fragmsgscale, 0, 0.5f, 1.0f);
+    MODVARP(fragmsg, 0, 0, 2);
+    MODVARP(fragmsgmax, 1, 3, 10);
+    MODVARP(fragmsgmillis, 0, 3000, 10000);
+    MODVARP(fragmsgfade, 0, 1, 1);
+    MODFVARP(fragmsgx, 0, 0.5f, 1.0f);
+    MODFVARP(fragmsgy, 0, 0.15f, 1.0f);
+    MODFVARP(fragmsgscale, 0, 0.5f, 1.0f);
 
     void addfragmessage(const char *aname, const char *vname, int gun)
     {
@@ -1331,7 +1331,7 @@ namespace game
 
     // highly experimental stuff below
 
-    VARP(hudstats, 0, 1, 1);
+    MODVARP(hudstats, 0, 1, 1);
 
     void fillICharArray(char result[], int count) {
         for (int i = 0; i < count; ++i) {
@@ -1340,7 +1340,7 @@ namespace game
         result[count] = '\0';  // null-terminate the string
     }
     
-    VARP(playercounter, 0, 1, 1);
+    MODVARP(playercounter, 0, 1, 1);
 
     void renderAlivePlayersByTeam(int conw, int conh, int roffset, int FONTH) {
         if(!playercounter) return;
@@ -1406,7 +1406,7 @@ namespace game
 
     }
 
-    VARP(sessionlendisplay, 0, 1, 1);
+    MODVARP(sessionlendisplay, 0, 1, 1);
 
     void formatTime(int seconds, char *output, int size) {
         int hours = seconds / 3600;
@@ -1427,7 +1427,7 @@ namespace game
 
     //int roundaccuracy(float accuracy) { return static_cast<int>(accuracy + 0.5); }
 
-    VARP(showweaponstats, 0, 1, 1);
+    MODVARP(showweaponstats, 0, 1, 1);
 
     bool renderweaponstats(int conw, int conh, int woffset, int FONTH, int roffset) {
         if (!hudstats) return false;
@@ -1644,7 +1644,7 @@ namespace game
         return NULL;
     }
 
-    SVAR(filterservers, "");
+    MODSVAR(filterservers, "");
 
 
     bool serverinfoentry(g3d_gui *g, int i, const char *name, int port, const char *sdesc, const char *map, int ping, const vector<int> &attr, int np)
@@ -1753,6 +1753,7 @@ namespace game
     void readgamedata(vector<char> &extras) {}
 
     const char *savedconfig() { return "config.cfg"; }
+    const char *modconfig() { return "mod_config.cfg"; }
     const char *restoreconfig() { return "restore.cfg"; }
     const char *defaultconfig() { return "data/defaults.cfg"; }
     const char *autoexec() { return "autoexec.cfg"; }

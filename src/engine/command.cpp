@@ -2436,49 +2436,60 @@ bool validateblock(const char *s)
 }
 
 #ifndef STANDALONE
-void writecfg(const char *name)
+
+
+void writecfg(const char *name, bool writemodvars)
 {
-    stream *f = openutf8file(path(name && name[0] ? name : game::savedconfig(), true), "w");
+    stream *f = openutf8file(path(name && name[0] ? name : (writemodvars? game::modconfig(): game::savedconfig()), true), "w");
+    //stream *f = openutf8file(path(name && name[0] ? name : (hsc?        game::hscconfig(): game::savedconfig()), true), "w");
     if(!f) return;
-    f->printf("// automatically written on exit, DO NOT MODIFY\n// delete this file to have %s overwrite these settings\n// modify settings in game, or put settings in %s to override anything\n\n", game::defaultconfig(), game::autoexec());
-    game::writeclientinfo(f);
-    f->printf("\n");
-    writecrosshairs(f);
+    if(!writemodvars)
+    {
+        f->printf("// automatically written on exit, DO NOT MODIFY\n// delete this file to have %s overwrite these settings\n// modify settings in game, or put settings in %s to override anything\n\n", game::defaultconfig(), game::autoexec());
+        game::writeclientinfo(f);
+        f->printf("\n");
+        writecrosshairs(f);
+    }
+    else f->printf("// automatically written on exit, DO NOT MODIFY\n");
     vector<ident *> ids;
     enumerate(idents, ident, id, ids.add(&id));
     ids.sortname();
     loopv(ids)
     {
         ident &id = *ids[i];
-        if(id.flags&IDF_PERSIST) switch(id.type)
+        //if(id.flags&IDF_PERSIST) switch(id.type)
+        if((!writemodvars && id.flags&IDF_PERSIST && !(id.flags&IDF_MOD)) || (writemodvars && id.flags&IDF_MOD)) switch(id.type)
         {
             case ID_VAR: f->printf("%s %d\n", escapeid(id), *id.storage.i); break;
             case ID_FVAR: f->printf("%s %s\n", escapeid(id), floatstr(*id.storage.f)); break;
             case ID_SVAR: f->printf("%s %s\n", escapeid(id), escapestring(*id.storage.s)); break;
         }
     }
-    f->printf("\n");
-    writebinds(f);
-    f->printf("\n");
-    loopv(ids)
+    if(!writemodvars)
     {
-        ident &id = *ids[i];
-        if(id.type==ID_ALIAS && id.flags&IDF_PERSIST && !(id.flags&IDF_OVERRIDDEN)) switch(id.valtype)
+        f->printf("\n");
+        writebinds(f);
+        f->printf("\n");
+        loopv(ids)
         {
-        case VAL_STR:
-            if(!id.val.s[0]) break;
-            if(!validateblock(id.val.s)) { f->printf("%s = %s\n", escapeid(id), escapestring(id.val.s)); break; }
-        case VAL_FLOAT:
-        case VAL_INT: 
-            f->printf("%s = [%s]\n", escapeid(id), id.getstr()); break;
+            ident &id = *ids[i];
+            if(id.type==ID_ALIAS && id.flags&IDF_PERSIST && !(id.flags&IDF_OVERRIDDEN)) switch(id.valtype)
+            {
+            case VAL_STR:
+                if(!id.val.s[0]) break;
+                if(!validateblock(id.val.s)) { f->printf("%s = %s\n", escapeid(id), escapestring(id.val.s)); break; }
+            case VAL_FLOAT:
+            case VAL_INT:
+                f->printf("%s = [%s]\n", escapeid(id), id.getstr()); break;
+            }
         }
+        f->printf("\n");
+        writecompletions(f);
     }
-    f->printf("\n");
-    writecompletions(f);
     delete f;
 }
-
-COMMAND(writecfg, "s");
+ICOMMAND(writecfg, "s", (const char *name), { writecfg(name, false); });
+//COMMAND(writecfg, "s");
 #endif
 
 void changedvars()

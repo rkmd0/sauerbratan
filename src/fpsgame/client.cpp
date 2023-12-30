@@ -7,7 +7,7 @@ namespace game
     VARP(maxradarscale, 1, 1024, 10000);
     VARP(radarteammates, 0, 1, 1);
     FVARP(minimapalpha, 0, 1, 1);
-    VARP(renameprotection, 0, 0, 1);
+    MODVARP(renameprotection, 0, 0, 1);
 
     float calcradarscale()
     {
@@ -1283,8 +1283,8 @@ namespace game
 
     extern int deathscore;
 
-    VARP(hideping, 0, 0, 1);
-	VARP(pingvalue, INT_MIN, 0, INT_MAX);
+    MODVARP(hideping, 0, 0, 1);
+	MODVARP(pingvalue, INT_MIN, 0, INT_MAX);
     extern int totalfrags;
 	extern int totaldeaths;
 	extern int savestats;

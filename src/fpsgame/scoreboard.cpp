@@ -15,13 +15,13 @@ namespace game
     VARP(showconnecting, 0, 0, 1);
     VARP(hidefrags, 0, 1, 1);
     VARP(showdeaths, 0, 0, 1);
-    VARP(showkpd, 0, 0, 1);
-    VARP(showaccuracy, 0, 0, 1);
-    VARP(showdamage, 0, 0, 2);
-    VARP(showflags, 0, 1, 1);
-    VARP(showspecicons, 0, 1, 1);
-    VARP(showctfflagicons, 0, 1, 1);
-    VARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
+    MODVARP(showkpd, 0, 0, 1);
+    MODVARP(showaccuracy, 0, 0, 1);
+    MODVARP(showdamage, 0, 0, 2);
+    MODVARP(showflags, 0, 1, 1);
+    MODVARP(showspecicons, 0, 1, 1);
+    MODVARP(showctfflagicons, 0, 1, 1);
+    MODVARP(showteamsize, 0, 1, 1); // maybe for all vs all's?
     
     static hashset<teaminfo> teaminfos;
 

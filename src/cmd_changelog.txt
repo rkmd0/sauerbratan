@@ -61,6 +61,7 @@ VARP(showweaponstats, 0, 1, 1);     // user should be able to disable advanced w
     //     -> review colors
     //     -> rewrite everything..
 VARFP(bratanmenu, 0, 0, 1, {}); // hardcoded menu - currently only for filterserver
+added MOD config - separate vanilla and mod VARs and write them into config.cfg or mod.cfg respectively, so the stuff from the modconfig line won't end up in config.cfg
 
 
 

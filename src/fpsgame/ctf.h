@@ -544,10 +544,10 @@ struct ctfclientmode : clientmode
         return (h*(1 + 1 + 10))/(4*10);
     }
 
-    VARP(flagmillis, 0, 0, 1);
-    VARP(flagmillisx, 0, 0, 4500);
-    VARP(flagmillisy, 0, 0, 2500);
-    FVARP(flagmillissize, 0.1f, 0.5f, 10);
+    MODVARP(flagmillis, 0, 0, 1);
+    MODVARP(flagmillisx, 0, 0, 4500);
+    MODVARP(flagmillisy, 0, 0, 2500);
+    MODFVARP(flagmillissize, 0.1f, 0.5f, 10);
 
     void drawhud(fpsent *d, int w, int h)
     {

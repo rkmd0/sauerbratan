@@ -13,7 +13,7 @@ namespace game
     VARP(ragdollfade, 0, 1000, 300000);
     VARFP(playermodel, 0, 0, 4, changedplayermodel());
     VARP(forceplayermodels, 0, 0, 1);
-    VARP(setplayermodel, -1, -1, 4);
+    MODVARP(setplayermodel, -1, -1, 4);
     VARP(hidedead, 0, 0, 2);
 
     vector<fpsent *> ragdolls;
