@@ -412,7 +412,7 @@ namespace game
 
     // kinda ugly, because 'https://github.com/sauerbraten/p1xbraten/issues/64' also happens
     
-    VARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
+    /*VARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
         if (bratanmenu) {
             if (!execfile(create_menu_file)) { // create file if it doesnt exist
                 write_menu_config();
@@ -421,6 +421,22 @@ namespace game
             execfile(create_menu_file);
         } else {
             execfile("data/menus.cfg"); 
+        }
+    });*/
+    // not ideal but kinda does the job
+    bool lastvalue = false;
+    MODVARFP(bratanmenu, 0, 0, 1, {// rename this silly already plz
+        if (bratanmenu) {
+            if (!execfile(create_menu_file)) { // create file if it doesnt exist
+                write_menu_config();
+                execfile(create_menu_file); // 'file' - executestr?
+                lastvalue = true;
+            }
+            execfile(create_menu_file);
+            lastvalue = true;
+        } else if(lastvalue && bratanmenu != 1 ) {
+            execfile("data/menus.cfg");
+            lastvalue = false;
         }
     });
     
