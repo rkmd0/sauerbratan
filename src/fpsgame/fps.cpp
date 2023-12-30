@@ -325,35 +325,104 @@ namespace game
         totalflags = 0;
     }
 
-void formatTime(int totalSeconds, int &hours, int &minutes, int &seconds)
-{
-    hours = totalSeconds / 3600;
-    totalSeconds -= hours * 3600;
-    minutes = totalSeconds / 60;
-    totalSeconds -= minutes * 60;
-    seconds = totalSeconds;
-}
-
-void localstats() // rework on this - add var possibility (more advanced stats etc)
-{
-    int hoursPlayed, minutesPlayed, secondsPlayed;
-    int hoursSpectated, minutesSpectated, secondsSpectated;
-
-    formatTime(totalplaytime, hoursPlayed, minutesPlayed, secondsPlayed);
-    formatTime(totalspectime, hoursSpectated, minutesSpectated, secondsSpectated);
-
-    if (!savestats) conoutf("Local stats are currently disabled");
-    else
+    void formatTime(int totalSeconds, int &hours, int &minutes, int &seconds)
     {
-        conoutf("Total stats: %02d:%02d:%02d played, %02d:%02d:%02d spectated, %d frags, %d deaths, %.2f K/D, %d flags, Session Duration: %02d:%02d:%02d",
-            hoursPlayed, minutesPlayed, secondsPlayed, hoursSpectated, minutesSpectated, secondsSpectated,
-            totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths * 1.f : 1.00f), totalflags,
-            totalmillis / 3600000, (totalmillis % 3600000) / 60000, (totalmillis % 60000) / 1000);
+        hours = totalSeconds / 3600;
+        totalSeconds -= hours * 3600;
+        minutes = totalSeconds / 60;
+        totalSeconds -= minutes * 60;
+        seconds = totalSeconds;
     }
-}
+
+    void localstats() // rework on this - add var possibility (more advanced stats etc)
+    {
+        int hoursPlayed, minutesPlayed, secondsPlayed;
+        int hoursSpectated, minutesSpectated, secondsSpectated;
+
+        formatTime(totalplaytime, hoursPlayed, minutesPlayed, secondsPlayed);
+        formatTime(totalspectime, hoursSpectated, minutesSpectated, secondsSpectated);
+
+        if (!savestats) conoutf("Local stats are currently disabled");
+        else
+        {
+            conoutf("Total stats: %02d:%02d:%02d played, %02d:%02d:%02d spectated, %d frags, %d deaths, %.2f K/D, %d flags, Session Duration: %02d:%02d:%02d",
+                hoursPlayed, minutesPlayed, secondsPlayed, hoursSpectated, minutesSpectated, secondsSpectated,
+                totalfrags, totaldeaths, totalfrags / (totaldeaths > 0 ? totaldeaths * 1.f : 1.00f), totalflags,
+                totalmillis / 3600000, (totalmillis % 3600000) / 60000, (totalmillis % 60000) / 1000);
+        }
+    }
 
     ICOMMAND(localstats, "", (), localstats());
     ICOMMAND(resetlocalstats, "", (), resetlocalstats());
+
+
+    // ugly, but it does the job
+
+    //file creation for custom menus - currently only used for 'filterserver' (by p1x)
+
+    const char *create_menu_file = "bratan_menus.cfg";
+
+    void write_menu_config()
+    {
+        const char *menuConfig = R"delimiter(
+            newgui servers [
+                guistayopen [
+                    guiservers [
+                        guilist [
+                            guibutton "update from master server" "updatefrommaster"
+                            guibar
+                            guitext "search: " 0
+                            newfilterdesc = $filterservers
+                            guifield newfilterdesc 10 [filterservers $newfilterdesc]
+                            guibutton "" [filterservers ""] "exit"
+                            guispring
+                            guicheckbox "search LAN" searchlan
+                            guibar
+                            guicheckbox "auto-update" autoupdateservers
+                            guibar
+                            guicheckbox "auto-sort" autosortservers
+                            if (= $autosortservers 0) [
+                                guibar
+                                guibutton "sort" "sortservers"
+                            ]
+                        ]
+                        guibar
+                    ] 17
+                ]
+            ] "" [initservers]
+        )delimiter"; // yay, never used delimeter before
+
+        const char *filename = path(create_menu_file, true);
+
+        stream *configFile = openutf8file(filename, "w");
+        if (!configFile)
+        {
+            conoutf("Failed to open or create %s for writing.", filename);
+            return;
+        }
+
+        configFile->putstring(menuConfig);
+
+        delete configFile;  // don't forget to delete the stream when you're done.
+
+        conoutf("File %s has been created.", filename);
+        //execfile(filename);
+    }
+
+
+    VARFP(bratanmenu, 0, 0, 1, { // rename this silly already plz
+        if (bratanmenu) {
+            if (!execfile(create_menu_file)) { // create file if it doesnt exist
+                write_menu_config();
+                execfile(create_menu_file); // 'file' - executestr?
+            }
+            execfile(create_menu_file);
+        } else {
+            execfile("data/menus.cfg"); // kinda ugly, because 'https://github.com/sauerbraten/p1xbraten/issues/64' also happens albeit only once
+        }
+    });
+
+    // ugly end
 
     float proximityscore(float x, float lower, float upper)
     {

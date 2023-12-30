@@ -60,7 +60,7 @@ VARP(showweaponstats, 0, 1, 1);     // user should be able to disable advanced w
     //     -> review allignment
     //     -> review colors
     //     -> rewrite everything..
-
+VARFP(bratanmenu, 0, 0, 1, {}); // hardcoded menu - currently only for filterserver
 
 
 
