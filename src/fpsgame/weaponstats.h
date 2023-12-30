@@ -11,6 +11,7 @@ namespace game {
     extern int playerdamagewasted(fpsent *p, int gun = -1);
     extern int playernetdamage(fpsent *p, int gun = -1);
     extern float playeraccuracy(fpsent *p, int gun = -1);
+    extern int roundaccuracy(float accuracy);
 
     #define PLAYER_VARGS_ICOMMAND(name,b) ICOMMAND(name, "V", (tagval *args, int numargs), { \
         fpsent *p = (numargs > 0 && args[0].getint() != -1) ? getclient(args[0].getint()) : hudplayer(); \

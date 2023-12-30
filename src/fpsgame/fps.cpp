@@ -1356,7 +1356,7 @@ void localstats() // rework on this - add var possibility (more advanced stats e
         draw_text(session_timer, conw - 10 * FONTH - 10, conh-FONTH*3/2);
     }
 
-    int roundaccuracy(float accuracy) { return static_cast<int>(accuracy + 0.5); }
+    //int roundaccuracy(float accuracy) { return static_cast<int>(accuracy + 0.5); }
 
     VARP(showweaponstats, 0, 1, 1);
 
