@@ -63,7 +63,6 @@ VARP(showweaponstats, 0, 1, 1);     // user should be able to disable advanced w
 VARFP(bratanmenu, 0, 0, 1, {}); // hardcoded menu - currently only for filterserver
 added MOD config - separate vanilla and mod VARs and write them into config.cfg or mod.cfg respectively, so the stuff from the modconfig line won't end up in config.cfg
     -> bratanmenu fix needed: either hardcode vanilla or make it a normal var or leave it as it is (cuz essentially im the only one using bot warm up)
-
 // added custom weapon trails - cur values are vanilla
     MODHVARP(trailcolorgl, 0, 0x404040, 0xFFFFFF);
     MODHVARP(trailcolorrl, 0, 0x404040, 0xFFFFFF);
@@ -72,6 +71,8 @@ added MOD config - separate vanilla and mod VARs and write them into config.cfg 
     MODHVARP(trailcolorri, 0, 0x404040, 0xFFFFFF);
     MODHVARP(trailcolorpi, 0, 0xFFC864, 0xFFFFFF);
     ICOMMAND(resettrailcolors, "", (), {}); // will also print old values
+// custom crosshaircolor
+    MODHVARP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF);
 
 
 Ah, fuck massive todo: use totalmillis instead of lastmillis -> gamespeed scaling!!!
