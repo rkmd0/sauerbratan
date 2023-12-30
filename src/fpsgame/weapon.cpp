@@ -228,6 +228,14 @@ namespace game
         b->bounces++;
         adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec(0x60, 0xFF, 0xFF), rnd(4));
     }
+
+    // add custom trail colors
+    MODHVARP(trailcolorgl, 0, 0x404040, 0xFFFFFF);
+    MODHVARP(trailcolorrl, 0, 0x404040, 0xFFFFFF);
+    MODHVARP(trailcolorsg, 0, 0xFFC864, 0xFFFFFF);
+    MODHVARP(trailcolorcg, 0, 0xFFC864, 0xFFFFFF);
+    MODHVARP(trailcolorri, 0, 0x404040, 0xFFFFFF);
+    MODHVARP(trailcolorpi, 0, 0xFFC864, 0xFFFFFF);
         
     void updatebouncers(int time)
     {
@@ -237,7 +245,7 @@ namespace game
             if(bnc.bouncetype==BNC_GRENADE && bnc.vel.magnitude() > 50.0f)
             {
                 vec pos = bnc.offsetpos();
-                regular_particle_splash(PART_SMOKE, 1, 150, pos, 0x404040, 2.4f, 50, -20);
+                regular_particle_splash(PART_SMOKE, 1, 150, pos, trailcolorgl, 2.4f, 50, -20);
             }
             vec old(bnc.o);
             bool stopped = false;
@@ -571,7 +579,7 @@ namespace game
                          }
                          particle_splash(guns[p.gun].part, 1, 1, pos, color, 4.8f, 150, 20);
                     }
-                    else regular_particle_splash(PART_SMOKE, 2, 300, pos, 0x404040, 2.4f, 50, -20);
+                    else regular_particle_splash(PART_SMOKE, 2, 300, pos, p.gun==GUN_RL ? trailcolorrl : 0x404040, 2.4f, 50, -20);
                 }
             }
             if(exploded)
@@ -607,7 +615,7 @@ namespace game
                 loopi(guns[gun].rays)
                 {
                     particle_splash(PART_SPARK, 20, 250, rays[i], 0xB49B4B, 0.24f);
-                    particle_flare(hudgunorigin(gun, from, rays[i], d), rays[i], 300, PART_STREAK, 0xFFC864, 0.28f);
+                    particle_flare(hudgunorigin(gun, from, rays[i], d), rays[i], 300, PART_STREAK, trailcolorsg, 0.28f);
                     if(!local) adddecal(DECAL_BULLET, rays[i], vec(from).sub(rays[i]).safenormalize(), 2.0f);
                 }
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 30, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
@@ -618,7 +626,7 @@ namespace game
             case GUN_PISTOL:
             {
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                particle_flare(hudgunorigin(gun, from, to, d), to, 600, PART_STREAK, 0xFFC864, 0.28f);
+                particle_flare(hudgunorigin(gun, from, to, d), to, 600, PART_STREAK, gun==GUN_CG ? trailcolorcg : trailcolorpi, 0.28f);
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, gun==GUN_CG ? 100 : 200, PART_MUZZLE_FLASH1, 0xFFFFFF, gun==GUN_CG ? 2.25f : 1.25f, d);
                 if(!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 2.0f);
@@ -651,7 +659,7 @@ namespace game
 
             case GUN_RIFLE:
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, 0x404040, 0.6f, 20);
+                particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, trailcolorrifle, 0.6f, 20);
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 150, PART_MUZZLE_FLASH3, 0xFFFFFF, 1.25f, d);
                 if(!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 3.0f);
@@ -676,6 +684,26 @@ namespace game
         }
         if(d->quadmillis && lastmillis-prevaction>200 && !looped) playsound(S_ITEMPUP, d==h ? NULL : &d->o);
     }
+
+    ICOMMAND(resettrailcolors, "", (), {
+        int old_colorgl = trailcolorgl;
+        int old_colorrl = trailcolorrl;
+        int old_colorsg = trailcolorsg;
+        int old_colorcg = trailcolorcg;
+        int old_colorri = trailcolorri;
+        int old_colorpi = trailcolorpi;
+
+        trailcolorgl = 0x404040;
+        trailcolorrl = 0x404040;
+        trailcolorsg = 0xFFC864;
+        trailcolorcg = 0xFFC864;
+        trailcolorri = 0x404040;
+        trailcolorpi = 0xFFC864;
+
+        conoutf("Trail colors reset to default values. Old values: GL: 0x%X RL: 0x%X SG: 0x%X CG: 0x%X RI: 0x%X PI: 0x%X",
+                old_colorgl, old_colorrl, old_colorsg, old_colorcg, old_colorri, old_colorpi);
+    });
+
 
     void particletrack(physent *owner, vec &o, vec &d)
     {
