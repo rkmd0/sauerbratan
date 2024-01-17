@@ -34,6 +34,7 @@ namespace game
     extern bool allowedittoggle();
     extern void edittoggled(bool on);
     extern void writeclientinfo(stream *f);
+    extern void append_to_file(const char *filename, const char *text, const char *sender, const char *teamtag);
     extern void toserver(char *text);
     extern void changemap(const char *name);
     extern void forceedit(const char *name);

@@ -959,10 +959,10 @@ namespace game
     VARP(teamcolorchat, 0, 1, 1);
     const char *chatcolorname(fpsent *d) { return teamcolorchat ? teamcolorname(d, NULL) : colorname(d); }
 
-    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); }
+    void toserver(char *text) { conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(player1), text); addmsg(N_TEXT, "rcs", player1, text); append_to_file("bratan_chat.txt", text, chatcolorname(player1), nullptr); }
     COMMANDN(say, toserver, "C");
 
-    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); }
+    void sayteam(char *text) { conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(player1), text); addmsg(N_SAYTEAM, "rcs", player1, text); append_to_file("bratan_chat.txt", text, chatcolorname(player1), "[team]"); }
     COMMAND(sayteam, "C");
 
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
@@ -1289,6 +1289,74 @@ namespace game
 	extern int totaldeaths;
 	extern int savestats;
 
+    MODVARP(allowchatonlylog, 0, 0, 1);
+    MODVARP(allowchatonlylogdemo, 0, 0, 1);
+
+    const char *create_chat_file = "bratan_chat.txt";
+
+    void write_chat()
+    {
+
+        const char *filename = path(create_chat_file, true);
+
+        stream *chatfile = openutf8file(filename, "w");
+        if (!chatfile)
+        {
+            conoutf("Failed to open or create %s for writing.", filename);
+            return;
+        }
+
+        chatfile->putstring("chat log - do NOT modify");
+
+        delete chatfile;  // cleanup
+
+        conoutf("File %s has been created.", filename);
+    }
+
+    void append_to_file(const char *filename, const char *text, const char *sender, const char *teamtag)
+    {
+        if(!allowchatonlylog) return;
+        if(demoplayback && !allowchatonlylogdemo) return;
+        size_t filesize;
+        char *existingData = loadfile(filename, &filesize, true); // load the file with UTF-8 support
+        if (!existingData) {
+            conoutf("Failed to open or create %s for writing.", filename);
+            write_chat();
+        }
+        stream *f = openutf8file(filename, "wb");
+        if (!f) {
+            conoutf("Failed to open or create %s for writing.", filename);
+            delete[] existingData; // cleanup
+            return;
+        }
+        f->write(existingData, filesize);
+        delete[] existingData; // cleanup
+
+        if (sender && sender[0])
+        {
+            const char *demotag = demoplayback ? "[demo] " : "";
+
+            if (teamtag && teamtag[0])
+            {
+                f->printf("[%s] %s%s: %s\n", teamtag, demotag, sender, text);
+            }
+            else
+            {
+                f->printf("%s%s: %s\n", demotag, sender, text);
+            }
+        }
+        else
+        {
+            f->printf("%s\n", text);
+        }
+
+        delete f; // cleanup
+        //conoutf("Text appended to %s.", filename); // debug
+    }
+
+
+    const char *privatePrefix = "(private)";
+
     void parsemessages(int cn, fpsent *d, ucharbuf &p)
     {
         static char text[MAXTRANS];
@@ -1373,6 +1441,7 @@ namespace game
                 if(d->state!=CS_DEAD && d->state!=CS_SPECTATOR)
                     particle_textcopy(d->abovehead(), text, PART_TEXT, 2000, 0x32FF64, 4.0f, -8);
                 conoutf(CON_CHAT, "%s:\f0 %s", chatcolorname(d), text);
+                append_to_file(create_chat_file, text, colorname(d), nullptr);
                 break;
             }
 
@@ -1386,6 +1455,7 @@ namespace game
                 if(t->state!=CS_DEAD && t->state!=CS_SPECTATOR)
                     particle_textcopy(t->abovehead(), text, PART_TEXT, 2000, 0x6496FF, 4.0f, -8);
                 conoutf(CON_TEAMCHAT, "\fs\f8[team]\fr %s: \f8%s", chatcolorname(t), text);
+                append_to_file(create_chat_file, text, colorname(t), "[team]");
                 break;
             }
 
@@ -1832,6 +1902,7 @@ namespace game
             case N_SERVMSG:
                 getstring(text, p);
                 conoutf("%s", text);
+                if (strstr(text, privatePrefix) != NULL) append_to_file(create_chat_file, text, NULL, "[private]");
                 break;
 
             case N_SENDDEMOLIST:
