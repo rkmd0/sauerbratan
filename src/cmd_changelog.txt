@@ -81,7 +81,7 @@ added MOD config - separate vanilla and mod VARs and write them into config.cfg 
 // added chat only log, as always this feature needs to be activated first - poss todo: check in future for possible problems/exploits?
     MODVARP(allowchatonlylog, 0, 0, 1);
     MODVARP(allowchatonlylogdemo, 0, 0, 1); // untested but this should decide if chat only log gets saved in demo or not (altho player1 should have a specific mark in demos) - demo chat gets marked as demochat
-
+primitive consearch - /consearch <string> - will search for <string> in console history and skip to first match // eeeh
 
 
 

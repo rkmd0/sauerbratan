@@ -606,6 +606,35 @@ void clear_console()
     keyms.clear();
 }
 
+// primitive consearch command
+void consearch(const char *searchstr)
+{
+    if (!searchstr || !searchstr[0]) return;
+
+    int numlines = conlines.length();
+    int startline = max(conskip, 0);
+    int foundline = -1;
+
+    for (int i = startline; i < numlines; ++i)
+    {
+        const char *line = conlines[i].line;
+        if (strstr(line, searchstr))
+        {
+            foundline = i;
+            break;
+        }
+    }
+
+    if (foundline >= 0)
+    {
+        conskip = foundline;
+        conoutf("found match for '%s' at line %d.", searchstr, foundline);
+    }
+    else { conoutf("no match found for '%s' in console.", searchstr); }
+}
+
+ICOMMAND(consearch, "s", (const char *searchstr), consearch(searchstr));
+
 void writebinds(stream *f)
 {
     static const char * const cmds[3] = { "bind", "specbind", "editbind" };
