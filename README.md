@@ -8,19 +8,19 @@ Note that the following feature list is a work in progress, some features couldn
 ## Features
 
 - **Scoreboard:**
-    [] showfrags
-    [] showdeaths
-    [] show kpd
-    [] show accuracy
-    [] show damage (dealt and received)
-    [] show spectator's modelicon
+    [x] showfrags
+    [x] showdeaths
+    [x] show kpd
+    [x] show accuracy
+    [x] show damage (dealt and received)
+    [x] show spectator's modelicon
     [] hide icons option
-    [] show current flagholder
+    [x] show current flagholder
     [] alternative scoreboard possibility (no teamname backgrounds)
     [] show level next to bots name 
     [] show specific models only (dont draw other icons)
     [] possibility to change text color
-    [] show teamsize
+    [x] show teamsize
     [] always show all clientnumbers (while also respecting the duplicate names)
     [] option to use p1xbraten's 'clean' scoreboard
     [] option to delete all seperator lines
@@ -28,44 +28,43 @@ Note that the following feature list is a work in progress, some features couldn
     [] highlightname 2 possibility
 
 - **HUD:**
-    [] fragmessages (currently only for the player1)
+    [x] fragmessages (currently only for the player1)
     [] advancedfragmsgcoloring (player1 gets colored)
     [] event messages (HB, QUAD, FLAGSCORE, FLAGRETURN, FLAGTAKE, etc.., FRAGS, SUICIDES)
-    [] show team names and 'flagtaken' display
-    [] players alive display (htop-style bars) if teammode/ctf 'good' and 'evil' -> else just a 'alive' counter
+    [x] show team names and 'flagtaken' display
+    [x] players alive display (htop-style bars) if teammode/ctf 'good' and 'evil' -> else just a 'alive' counter
     [] lagometer display -> pj,  standard deviation pj, ping and packetloss display, with different colors (note that the pj is accumulated from all players) -> option to display pj on hudplayer
-    [] basic and advanced weapon and game stats (damage, accuracy, frags, kpd..)
-    [] session length displayed next to fps/time
-    [] option to hide hud but not crosshair (for movie purposes)
-    [] flagtimer, for flagrun purposes
+    [x] basic and advanced weapon and game stats (damage, accuracy, frags, kpd..)
+    [x] session length displayed next to fps/time
+    [x] option to hide hud but not crosshair (for movie purposes)
+    [x] flagtimer, for flagrun purposes
     [] velocity display
 
 - **Serverbrowser:**
     [] extinfo based serverpreview (with stats)
-    [] server search possibility (mode, map or description)
+    [x] server search possibility (mode, map or description)
 
 - **Game:**
-    [] mod specific config to differ between vanilla and mod stats
+    [x] mod specific config to differ between vanilla and mod stats
     [] option to save localstats into global and reset local -> txt creation that saves these stats with timestamp and opt reason
     [] stats config
-    [] screenshot output message
-    [] spectators able to use teleports and move while game paused
-    [] possibility to set/force specific playermodels
-    [] chat only logfile - pm's might not get included since those are servermessages sometimes
+    [x] screenshot output message
+    [x] spectators able to use teleports and move while game paused
+    [x] possibility to set/force specific playermodels
+    [x] chat only logfile - pm's might not get included since those are servermessages sometimes
     [] dated, unique logfiles for each session (.bat change needed)
     [] save all used names, save it in a txt file
-    [] renameprotection
-    [] sessionlength - how long is the client running
-    [] screenshot output message
-    [] console history 
-    [] automatic, mod specific, menu creation
+    [x] renameprotection
+    [x] sessionlength - how long is the client running
+    [x] console history 
+    [x] automatic, mod specific, menu creation
     [] nextteamfollow, TODO: eventfollow, flagfollow, etc..
     [] opt to show custom backgrounds..
-    [] clientsided /stats command, -1 -> all player, no arg -> player, "cn" -> specific cn stats, TODO: -2 -> everyones but spectators stats
+    [x] clientsided /stats command, -1 -> all player, no arg -> player, "cn" -> specific cn stats, TODO: -2 -> everyones but spectators stats
     [] advanced teamstats bounded into a gui, average and accumulated ping, damage, flags stolen, frags -> todo: add more events, names etc
     
 - **Weapon:**
-    [] option to change trail colors for all weapons
+    [x] option to change trail colors for all weapons
     [] option to set rifle trail to lighting (also color setable)
 
 - **planned, but never added:**

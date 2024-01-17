@@ -341,9 +341,6 @@ struct hline
 vector<hline *> history;
 int histpos = 0;
 
-vector<hline *> history;
-int histpos = 0;
-
 const char *historyfile() { return "brat_history.txt"; }
 void savehistory()
 {
