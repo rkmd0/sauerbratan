@@ -73,6 +73,13 @@ added MOD config - separate vanilla and mod VARs and write them into config.cfg 
     ICOMMAND(resettrailcolors, "", (), {}); // will also print old values
 // custom crosshaircolor
     MODHVARP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF);
+// work still being done, 17.01.2024, hrhr
+// added history command to save and access console input history
+    MODVARP(savehistory, 0, 0, 1); // gets saved if 1
+    void loadhistory();
+    void savehistory();
+
+
 
 
 Ah, fuck massive todo: use totalmillis instead of lastmillis -> gamespeed scaling!!!

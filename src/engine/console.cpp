@@ -341,6 +341,44 @@ struct hline
 vector<hline *> history;
 int histpos = 0;
 
+vector<hline *> history;
+int histpos = 0;
+
+const char *historyfile() { return "brat_history.txt"; }
+void savehistory()
+{
+    stream *f = openutf8file(path(historyfile(), true), "w");
+    if(!f) return;
+	loopv(history)
+	{
+		hline *h = history[i];
+		if(!h->buf) continue;
+		f->putline(h->buf);
+	}
+	delete f;
+}
+COMMAND(savehistory, "");
+void loadhistory()
+{		
+	stream *f = openutf8file(path(historyfile(), true), "r");
+	if(!f) { return; }
+	string next;
+	while(f->getline(next, sizeof(next)))
+	{
+		hline *d = new hline;
+		filtertext(next, next);
+		if(next[strlen(next)-1]== '\n') next[strlen(next)-1] = '\0';
+		d->buf = newstring(next);
+		d->flags = 3;
+		d->action = d->prompt = 0;
+		if(strlen(next)) history.add(d);
+		else delete d;
+	}
+	delete f;
+	histpos = history.length();
+}
+COMMAND(loadhistory, "");
+
 VARP(maxhistory, 0, 1000, 10000);
 
 void history_(int *n)

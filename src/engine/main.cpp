@@ -29,6 +29,21 @@ void cleanup()
 }
 
 extern void writeinitcfg();
+extern void loadhistory();
+extern void savehistory();
+
+MODVARP(savehistory, 0, 0, 1);
+
+void brat_startup()
+{
+    if(savehistory) loadhistory();
+}
+
+
+void brat_quit()
+{
+    if(savehistory) savehistory();
+}
 
 void quit()                     // normal exit
 {
@@ -39,6 +54,7 @@ void quit()                     // normal exit
     localdisconnect();
     writecfg();
     writecfg(NULL, true);
+    brat_quit();
     cleanup();
     exit(EXIT_SUCCESS);
 }
@@ -1345,6 +1361,7 @@ int main(int argc, char **argv)
 
     inputgrab(grabinput = true);
     ignoremousemotion();
+    brat_startup();
 
     for(;;)
     {
