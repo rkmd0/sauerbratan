@@ -32,17 +32,17 @@ extern void writeinitcfg();
 extern void loadhistory();
 extern void savehistory();
 
-MODVARP(savehistory, 0, 0, 1);
+MODVARP(saveconsolehistory, 0, 0, 1);
 
 void brat_startup()
 {
-    if(savehistory) loadhistory();
+    if(saveconsolehistory) loadhistory();
 }
 
 
 void brat_quit()
 {
-    if(savehistory) savehistory();
+    if(saveconsolehistory) savehistory();
 }
 
 void quit()                     // normal exit
