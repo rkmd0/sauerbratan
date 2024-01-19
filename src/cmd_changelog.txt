@@ -82,6 +82,15 @@ added MOD config - separate vanilla and mod VARs and write them into config.cfg 
     MODVARP(allowchatonlylog, 0, 0, 1);
     MODVARP(allowchatonlylogdemo, 0, 0, 1); // untested but this should decide if chat only log gets saved in demo or not (altho player1 should have a specific mark in demos) - demo chat gets marked as demochat
 primitive consearch - /consearch <string> - will search for <string> in console history and skip to first match // eeeh
+various scoreboard changes
+    MODVARP(showplayericon, 0, 1, 1);
+    MODVARP(alternativescoreboard, 0, 0, 1); // no teambackground + scoreboardtextcolor will be set to grey
+    MODHVARP(scoreboardtextcolor, 0, 0xA0A0A0, 0xFFFFFF);
+    MODVARP(showpjcolor, 0, 1, 1); // can be turned off
+    MODVARP(spacevarp, 1, 1, 10); // set the space between the columns (when noseperator is activated)
+    MODVARP(noseperator, 0, 0, 1); // delete all seperator lines - 'cleaner' scoreboard
+    add usep1xbratenscoreboard command
+    resetscoreboardcolours for alternativescoreboard 
 
 
 
@@ -92,16 +101,11 @@ make an extra column for flags - hideflags?
 birthday saver? (hash set test)
 clientsided demos!!!!
 add server preview - modifiy stuff there (extinfo)
-upload modvar (special config for client)
-update scoreboard - alternative etc...
-    add highlightscore 2 - loopspecs etc
+
+
+add highlightscore 2 - loopspecs etc
 improve fragmsg!!!! - reference p1xbraten etc - confilter like
     add event message
-add usemymenu - like usep1xbraten menu reference
-MOD(VARFP, usep1xbratenmenus, 0, 1, 1, {
-        if(usep1xbratenmenus) execfile(menus_cfg.name);
-        else execfile("data/menus.cfg");
-    }); ?
 make timestamp on logfile src sided? ref:hsc
 update scoreboard - ping/modelicon/etc
 
