@@ -6,7 +6,7 @@ namespace game
 {
     VARP(scoreboard2d, 0, 1, 1);
     VARP(showservinfo, 0, 1, 1);
-    VARP(showclientnum, 0, 0, 1);
+    VARP(showclientnum, 0, 0, 2);
     VARP(showpj, 0, 0, 1);
     VARP(showping, 0, 1, 2);
     VARP(showspectators, 0, 1, 1);
@@ -191,7 +191,7 @@ namespace game
             color = d->privilege>=PRIV_ADMIN ? 0xFF8000 : (d->privilege>=PRIV_AUTH ? 0xC040C0 : 0x40FF80);
             if(d->state==CS_DEAD) color = (color>>1)&0x7F7F7F;
         }
-        if(highlightscore == 2 && d == player1 && d->state==CS_DEAD)color = (color>>1)&0x7F7F7F;
+        else if(highlightscore == 2 && d == player1 && d->state==CS_DEAD)color = (color>>1)&0x7F7F7F;
         else if(d->state==CS_DEAD) color = 0x606060;
         return color;
     }
@@ -341,10 +341,20 @@ namespace game
             g.pushlist();
             g.text("name", fgcolor);
             g.strut(12);
-            loopscoregroup(o,
+            /*loopscoregroup(o,
             {
                 g.textf("%s ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), NULL, colorname(o));
+            });*/
+            loopscoregroup(o,
+            {
+                const char *name = NULL; const char *alt = NULL;
+                if(!name) name = alt && o == player1 ? alt : o->name;
+                bool dup = !name[0] || duplicatename(o, name, alt) || o->aitype != AI_NONE;
+                g.textf(showclientnum < 2 || dup ? "%s " : "%s \f4[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), NULL, colorname(o), o->clientnum);
             });
+
+
+
             g.poplist();
 
             if (showkpd)
@@ -469,7 +479,8 @@ namespace game
                 }
             }
 
-            if(showclientnum || player1->privilege>=PRIV_MASTER)
+            if(showclientnum == 1 || (showclientnum < 2 && player1->privilege>=PRIV_MASTER))
+
             {
                 g.space(1);
                 g.pushlist();
@@ -501,7 +512,7 @@ namespace game
                     }
 
 
-            if(showclientnum || player1->privilege>=PRIV_MASTER)
+            if(showclientnum == 1 || (showclientnum < 2 && player1->privilege>=PRIV_MASTER))
             {
                 g.pushlist();
 
@@ -523,7 +534,11 @@ namespace game
                     const playermodelinfo &mdl = getplayermodelinfo(o);
                     const char* icon = (!showplayericon) ? "blank.png" : (showplayericon && showspecicons) ? mdl.ffaicon : "spectator";
                     //g.text(colorname(o), statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon);
-                    g.textf("%s ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o)); // seems to work? for showclientnum 2 purposes later..
+                    const char *name = NULL; const char *alt = NULL;
+                    if(!name) name = alt && o == player1 ? alt : o->name;
+                    bool dup = !name[0] || duplicatename(o, name, alt) || o->aitype != AI_NONE;
+                    g.textf(showclientnum < 2 || dup ? "%s " : "%s \f4[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o), o->clientnum);
+                    //g.textf("%s ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o)); // seems to work? for showclientnum 2 purposes later..
                     if (o == player1 && highlightscore) g.poplist();
                 );
                 g.poplist();
@@ -555,6 +570,55 @@ namespace game
 
                 g.poplist();
             }
+            else if(showclientnum > 1 || showspecicons || showspectatorping)
+            {
+                g.pushlist();
+
+                g.pushlist();
+                if(showteamsize) {
+					g.textf("spectator #%d", alternativescoreboard ? scoreboardtextcolor : 0xFFFF80, " ", spectators.length());
+					g.strut(15);
+				}
+				else {
+                	g.text("spectator ", alternativescoreboard ? scoreboardtextcolor : 0xFFFF80, " ");
+					g.strut(12);
+				}
+                loopspectators(o,
+                    if (o == player1 && highlightscore) {
+                        g.pushlist();
+                        if (highlightscore == 1) g.background(0x808080, 3);
+                    }
+
+                    const playermodelinfo &mdl = getplayermodelinfo(o);
+                    const char* icon = (!showplayericon) ? "blank.png" : (showplayericon && showspecicons) ? mdl.ffaicon : "spectator";
+                    const char *name = NULL; const char *alt = NULL;
+                    if(!name) name = alt && o == player1 ? alt : o->name;
+                    bool dup = !name[0] || duplicatename(o, name, alt) || o->aitype != AI_NONE;
+                    g.textf(showclientnum < 2 || dup ? "%s " : "%s \f4[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o), o->clientnum);
+                    if (o == player1 && highlightscore) g.poplist();
+                );
+                g.poplist();
+
+                if((multiplayer(false) || demoplayback) && showspectatorping)
+                {
+                    g.space(1);
+                    g.pushlist();
+                    g.text("ping", alternativescoreboard ? scoreboardtextcolor : 0xFFFF80);
+                    g.strut(6);
+                    loopspectators(o,
+                        fpsent *p = o->ownernum >= 0 ? getclient(o->ownernum) : o;
+                        if (!p) p = o;
+                        if (p->state == CS_LAGGED)
+                            g.text("LAG", highlightscore == 2 ? namehiglight : 0xFFFFDD);
+                        else
+                            g.textf("%d", highlightscore == 2 ? namehiglight : 0xFFFFDD, NULL, p->ping);
+                    );
+                    g.poplist();
+                }
+
+                g.poplist();
+            }
+
             else
             {
                 g.textf("%d spectator%s", alternativescoreboard ? scoreboardtextcolor : 0xFFFF80, " ", spectators.length(), spectators.length()!=1 ? "s" : "");

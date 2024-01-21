@@ -926,7 +926,34 @@ namespace game
     static string cname[3];
     static int cidx = 0;
 
+
+    VARP(showbotskill, 0, 1, 1);
+
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
+    {
+        if(!name) name = alt && d == player1 ? alt : d->name;
+        bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
+        if(dup || prefix[0] || suffix[0])
+        {
+            cidx = (cidx+1)%3;
+			if(dup) {
+				if(d->aitype == AI_NONE) {
+					formatstring(cname[cidx], "%s%s \fs\f5(%d)\fr%s", prefix, name, d->clientnum, suffix);
+				} else {
+					if(showbotskill && d->skill) {
+						formatstring(cname[cidx], "%s%s \fs\f5[%d]\fr%s", prefix, name, d->skill, suffix);
+					} else {
+						formatstring(cname[cidx], "%s%s \fs\f5[%d]\fr%s", prefix, name, d->clientnum, suffix);
+					}
+				}
+			}
+            else formatstring(cname[cidx], "%s%s%s", prefix, name, suffix);
+            return cname[cidx];
+        }
+        return name;
+    }
+    // old 
+    /*const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {
         if(!name) name = alt && d == player1 ? alt : d->name;
         bool dup = !name[0] || duplicatename(d, name, alt) || d->aitype != AI_NONE;
@@ -938,7 +965,9 @@ namespace game
             return cname[cidx];
         }
         return name;
-    }
+    }*/
+
+
 
     VARP(teamcolortext, 0, 1, 1);
 

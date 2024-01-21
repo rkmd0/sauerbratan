@@ -92,10 +92,11 @@ various scoreboard changes
     add usep1xbratenscoreboard command
     resetscoreboardcolours for alternativescoreboard 
 highlightscore 2 - player1 name gets color instead of background -- maybe switch with hudplayer()?
+showclientnum 2 option (todo: make it 3 so it displays names on the console too...) - also, specshow relatively untested
+showbotskill option, shows botlevel instead of cn in their magenta bracket
 
 TODOS before first 'release':
     update sessionlen
-    add showclientnum 2-3, rework the specshow though
     add lighting rifle
     add colorful version message
     ultimatly ask jed on how to add the client version to the server
