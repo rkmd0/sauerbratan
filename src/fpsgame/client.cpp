@@ -967,6 +967,43 @@ namespace game
 
     ICOMMAND(servcmd, "C", (char *cmd), addmsg(N_SERVCMD, "rs", cmd));
 
+
+    void mock_say_generic(char *text, bool use_say_team) {
+        char mocked_text[MAXTRANS];
+        bool upper = false;
+
+
+        conoutf("please don't abuse this >_>");
+
+        for (int i = 0; text[i]; i++) {
+            if (isalpha(text[i])) {
+                mocked_text[i] = (upper ? toupper : tolower)(text[i]);
+                upper = !upper; // Toggle between upper and lower for each letter
+            } else {
+                mocked_text[i] = text[i];
+            }
+        }
+
+        mocked_text[strlen(text)] = '\0';
+
+        if (use_say_team) {
+            sayteam(mocked_text);
+        } else {
+            toserver(mocked_text);
+        }
+    }
+
+    void mock_say(char *text) {
+        mock_say_generic(text, false);
+    }
+
+    void mock_say_team(char *text) {
+        mock_say_generic(text, true);
+    }
+
+    COMMANDN(mocksay, mock_say, "C");
+    COMMANDN(mocksayteam, mock_say_team, "C");
+
     static void sendposition(fpsent *d, packetbuf &q)
     {
         putint(q, N_POS);

@@ -663,10 +663,9 @@ namespace game
                 if (coloredrifle)
                 {
                     int t = lastmillis % 6000;
-                    int frequencyMultiplier = 5;
-                    int r = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencyMultiplier * t / 6000.0)), 0, 255);
-                    int g = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencyMultiplier * (t + 1000) / 6000.0)), 0, 255);
-                    int b = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencyMultiplier * (t + 2000) / 6000.0)), 0, 255);
+                    int r = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * t / 6000.0)), 0, 255);
+                    int g = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * (t + 1000) / 6000.0)), 0, 255);
+                    int b = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * (t + 2000) / 6000.0)), 0, 255);
                     int trailcoloredrifle = 0xFF0000 | (r << 16) | (g << 8) | b;
 
                     if (rifletraillightning)
