@@ -34,9 +34,25 @@ extern void savehistory();
 
 MODVARP(saveconsolehistory, 0, 0, 1);
 
+
+MODVARP(allowversionmsg, 0, 1, 1);
+MODVARP(allowversionmsgcolor, 0, 1, 1);
+MODSVARP(selfservicemsg, "flowerbraten");
+
+void versioninfostarter()
+{
+
+    conoutf("%s%s \f7- powered by blumenservice", allowversionmsgcolor ? "\f9" : "\f7", selfservicemsg);
+}
+
+ICOMMAND(versioninfo, "", (), versioninfostarter());
+
+
+
 void brat_startup()
 {
     if(saveconsolehistory) loadhistory();
+    if(allowversionmsg) versioninfostarter();
 }
 
 
