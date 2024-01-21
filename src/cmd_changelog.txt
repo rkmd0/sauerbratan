@@ -91,7 +91,20 @@ various scoreboard changes
     MODVARP(noseperator, 0, 0, 1); // delete all seperator lines - 'cleaner' scoreboard
     add usep1xbratenscoreboard command
     resetscoreboardcolours for alternativescoreboard 
+highlightscore 2 - player1 name gets color instead of background -- maybe switch with hudplayer()?
 
+TODOS before first 'release':
+    update sessionlen
+    add showclientnum 2-3, rework the specshow though
+    add lighting rifle
+    add colorful version message
+    ultimatly ask jed on how to add the client version to the server
+    add eventmessage - for quad and hb first, rest is currently really not needed but it would be a cool addition
+
+TODO stuff that i would love to see but most likely wont:
+    clientdemos
+    fixed serverpreview
+    ...
 
 
 Ah, fuck massive todo: use totalmillis instead of lastmillis -> gamespeed scaling!!!
