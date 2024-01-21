@@ -927,7 +927,7 @@ namespace game
     static int cidx = 0;
 
 
-    VARP(showbotskill, 0, 1, 1);
+    MODVARP(showbotskill, 0, 1, 1);
 
     const char *colorname(fpsent *d, const char *name, const char *prefix, const char *suffix, const char *alt)
     {

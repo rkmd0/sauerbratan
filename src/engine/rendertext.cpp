@@ -205,7 +205,7 @@ static float draw_char(Texture *&tex, int c, float x, float y, float scale)
 
     return scale*info.advance;
 }
-
+MODVARP(frequencymultiplier, 0, 4, 10);
 //stack[sp] is current color index
 static void text_color(char c, char *stack, int size, int &sp, bvec color, int a) 
 {
@@ -230,6 +230,16 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
             case '6': color = bvec(255, 128,   0); break;   // orange
             case '7': color = bvec(255, 255, 255); break;   // white
             case '8': color = bvec( 96, 240, 255); break;   // cyan
+            case '9':  // :sparkles: colors :sparkles: 
+            {
+                int t = lastmillis % 24000;
+                int r = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * t / 6000.0)), 0, 255);
+                int g = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * (t + 1000) / 6000.0)), 0, 255);
+                int b = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * (t + 2000) / 6000.0)), 0, 255);
+                color = bvec(r, g, b);
+                break;
+              
+            }
             // provided color: everything else
         }
         gle::color(color, a);
