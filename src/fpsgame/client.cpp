@@ -1356,6 +1356,7 @@ namespace game
 
 
     const char *privatePrefix = "(private)";
+    MODVARP(eventmsg, 0, 1, 1); // currently: only hb and quad msg - todo: all flag msg (code is there) & msgfilter
 
     void parsemessages(int cn, fpsent *d, ucharbuf &p)
     {
@@ -2024,8 +2025,8 @@ namespace game
             case N_ANNOUNCE:
             {
                 int t = getint(p);
-                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); }
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2health boost will spawn in 10 seconds!"); }
+                if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); if(eventmsg) addfragmessage("spawns", "in 10s", 7);}
+                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2health boost will spawn in 10 seconds!"); if(eventmsg) addfragmessage("spawns", "in 10s", 15); }
                 break;
             }
 

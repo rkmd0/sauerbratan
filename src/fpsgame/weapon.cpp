@@ -597,6 +597,8 @@ namespace game
 
     VARP(muzzleflash, 0, 1, 1);
     VARP(muzzlelight, 0, 1, 1);
+    MODVARP(rifletraillightning, 0, 0, 1);
+    MODVARP(coloredrifle, 0, 0, 1);
 
     void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction)     // create visual effect from a shot
     {
@@ -658,12 +660,40 @@ namespace game
             }
 
             case GUN_RIFLE:
-                particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, trailcolorri, 0.6f, 20);
-                if(muzzleflash && d->muzzle.x >= 0)
+                if (coloredrifle)
+                {
+                    int t = lastmillis % 6000;
+                    int frequencyMultiplier = 5;
+                    int r = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencyMultiplier * t / 6000.0)), 0, 255);
+                    int g = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencyMultiplier * (t + 1000) / 6000.0)), 0, 255);
+                    int b = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencyMultiplier * (t + 2000) / 6000.0)), 0, 255);
+                    int trailcoloredrifle = 0xFF0000 | (r << 16) | (g << 8) | b;
+
+                    if (rifletraillightning)
+                    {
+                        particle_flare(hudgunorigin(gun, from, to, d), to, 800, PART_LIGHTNING, trailcoloredrifle, 1.0f);
+                    }
+                    else
+                    {
+                        particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
+                        particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, trailcoloredrifle, 0.6f, 20);
+                    }
+                }
+                else if (rifletraillightning)
+                {
+                    particle_flare(hudgunorigin(gun, from, to, d), to, 800, PART_LIGHTNING, trailcolorri, 1.0f);
+                }
+                else
+                {
+                    particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
+                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, trailcolorri, 0.6f, 20);
+                }
+
+                if (muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, 150, PART_MUZZLE_FLASH3, 0xFFFFFF, 1.25f, d);
-                if(!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 3.0f);
-                if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 25, vec(0.5f, 0.375f, 0.25f), 75, 75, DL_FLASH, 0, vec(0, 0, 0), d);
+                if (!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 3.0f);
+                if (muzzlelight)
+                    adddynlight(hudgunorigin(gun, d->o, to, d), 25, vec(0.5f, 0.375f, 0.25f), 75, 75, DL_FLASH, 0, vec(0, 0, 0), d);
                 break;
         }
 

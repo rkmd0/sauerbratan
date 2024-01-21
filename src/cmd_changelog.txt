@@ -94,13 +94,18 @@ various scoreboard changes
 highlightscore 2 - player1 name gets color instead of background -- maybe switch with hudplayer()?
 showclientnum 2 option (todo: make it 3 so it displays names on the console too...) - also, specshow relatively untested
 showbotskill option, shows botlevel instead of cn in their magenta bracket
+MODVARP(frequencymultiplier, 0, 4, 10); // :sparkles: colors :sparkles: 
+MODVARP(eventmsg, 0, 1, 1); // currently: only hb and quad msg - todo: all flag msg (code is there) & msgfilter
+// kind of my most useless addition so far but uhhh...
+    MODVARP(coloredrifle, 0, 0, 1); // rifle with colored trail
+    MODVARP(rifletraillightning, 0, 0, 1);  // rifle with lightning trail (can also be colored)
+ 
 
 TODOS before first 'release':
     update sessionlen
     add lighting rifle
     add colorful version message
     ultimatly ask jed on how to add the client version to the server
-    add eventmessage - for quad and hb first, rest is currently really not needed but it would be a cool addition
 
 TODO stuff that i would love to see but most likely wont:
     clientdemos
