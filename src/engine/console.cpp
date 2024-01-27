@@ -96,6 +96,8 @@ ICOMMAND(miniconskip, "i", (int *n), setconskip(miniconskip, miniconfilter, *n))
 
 ICOMMAND(clearconsole, "", (), { while(conlines.length()) delete[] conlines.pop().line; });
 
+MODVARP(contextfade, 0, 0, 1); //smooth fading of consoletext
+
 int drawconlines(int conskip, int confade, int conwidth, int conheight, int conoff, int filter, int y = 0, int dir = 1)
 {
     filter &= CON_FLAGS;
@@ -131,7 +133,16 @@ int drawconlines(int conskip, int confade, int conwidth, int conheight, int cono
         char *line = conlines[idx].line;
         int width, height;
         text_bounds(line, width, height, conwidth);
-        if(dir <= 0) y -= height; 
+        if(dir <= 0) y -= height;
+
+        if(contextfade) {
+            float alpha = 255.0;
+            if(!fullconsole && totalmillis - conlines[idx].outtime > (confade/10)*9000) 
+                alpha = 255.0 - 255.0*((float(totalmillis-conlines[idx].outtime)/1000.0)-float(confade)/10.0*9.0)/(float(confade)/10.0); //smooth outfading of consoletext
+            draw_text(line, conoff, y, 0xFF, 0xFF, 0xFF, (int)alpha, -1, conwidth);
+        }
+
+        else draw_text(line, conoff, y, 0xFF, 0xFF, 0xFF, 0xFF, -1, conwidth);
         draw_text(line, conoff, y, 0xFF, 0xFF, 0xFF, 0xFF, -1, conwidth);
         if(dir > 0) y += height;
     }

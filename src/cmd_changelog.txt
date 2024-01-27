@@ -95,7 +95,7 @@ highlightscore 2 - player1 name gets color instead of background -- maybe switch
 showclientnum 2 option (todo: make it 3 so it displays names on the console too...) - also, specshow relatively untested
 showbotskill option, shows botlevel instead of cn in their magenta bracket
 MODVARP(frequencymultiplier, 0, 4, 10); // :sparkles: colors :sparkles: 
-MODVARP(eventmsg, 0, 1, 1); // currently: only hb and quad msg - todo: all flag msg (code is there) & msgfilter
+MODVARP(eventmsg, 0, 1, 1); // currently: only hb and quad msg - todo: all flag msg (code is there) & msgfilter // also, currently it shows no icon for hb despite working?
 // kind of my most useless addition so far but uhhh...
     MODVARP(coloredrifle, 0, 0, 1); // rifle with colored trail
     MODVARP(rifletraillightning, 0, 0, 1);  // rifle with lightning trail (can also be colored)
@@ -105,10 +105,14 @@ MODVARP(eventmsg, 0, 1, 1); // currently: only hb and quad msg - todo: all flag 
     MODVARP(allowversionmsgcolor, 0, 1, 1);
     MODSVARP(selfservicemsg, "flowerbraten");
 mocksay command, not proud
- 
+VARP(contextfade, 0, 0, 1); //smooth fading of consoletext
+VARP(saveduelstats, 0, 1, 1); // simple duel stats // maybe cw soon too + duels get extra sshot dir
+    ICOMMAND(duelstats, "", (), displayDuelStats());
+    MODVARP(lostduel, 0, 0, INT_MAX);
+    MODVARP(wonduel, 0, 0, INT_MAX);
+    MODVARP(drawduel, 0, 0, INT_MAX);
 
 TODOS before first 'release':
-    update sessionlen
     ultimatly ask jed on how to add the client version to the server
 
 TODO stuff that i would love to see but most likely wont:

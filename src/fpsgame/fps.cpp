@@ -683,6 +683,65 @@ namespace game
 		ai::killed(d, actor);
     }
 
+    // keep tracks of duels
+    bool isduelmode()
+    {
+        int mode = gamemode;
+        return (mode == 0 || mode == 3 || mode == 5 || mode == 7);
+    }
+
+    enum dueloutcome
+    {
+        DRAW,
+        VICTORY,
+        DEFEAT,
+        NOT_A_DUEL
+    };
+
+    dueloutcome isduel(bool allowspec = false, int colors = 0)
+    {
+        extern int mastermode;
+        if ((!allowspec && player1->state == CS_SPECTATOR) || mastermode < MM_LOCKED || !game::isduelmode())
+            return NOT_A_DUEL;
+
+        int playingguys = 0;
+        fpsent *p1 = nullptr, *p2 = nullptr;
+
+        loopv(players)
+        {
+            if (players[i]->state != CS_SPECTATOR)
+            {
+                playingguys++;
+                if (p1)
+                    p2 = players[i];
+                else if (playingguys > 2)
+                    break;
+                else
+                    p1 = players[i];
+            }
+        }
+        if (playingguys != 2)
+            return NOT_A_DUEL;
+        fpsent *f = followingplayer();
+        if (!f && player1->state != CS_SPECTATOR)
+            f = player1;
+        bool winning = (f == p1 && p1->frags > p2->frags) || (f == p2 && p2->frags > p1->frags);
+        bool drawing = (p1->frags == p2->frags);
+
+
+        if (drawing)
+            return DRAW;
+        else if (winning)
+            return VICTORY;
+        else
+            return DEFEAT;
+    }
+
+    // totalduels not needed?
+    MODVARP(lostduel, 0, 0, INT_MAX);
+    MODVARP(wonduel, 0, 0, INT_MAX);
+    MODVARP(drawduel, 0, 0, INT_MAX);
+
     void timeupdate(int secs)
     {
         server::timeupdate(secs);
@@ -702,6 +761,23 @@ namespace game
             else conoutf(CON_GAMEINFO, "\f2player frags: %d, deaths: %d", player1->frags, player1->deaths);
             int accuracy = (player1->totaldamage*100)/max(player1->totalshots, 1);
             conoutf(CON_GAMEINFO, "\f2player total damage dealt: %d, damage wasted: %d, accuracy(%%): %d", player1->totaldamage, player1->totalshots-player1->totaldamage, accuracy);
+            switch (isduel())
+            {
+                case VICTORY:
+                    conoutf(CON_GAMEINFO, "\f2you won the duel!");
+                    wonduel++;
+                    break;
+                case DEFEAT:
+                    conoutf(CON_GAMEINFO, "\f2you lost the duel.");
+                    lostduel++;
+                    break;
+                case DRAW:
+                    conoutf(CON_GAMEINFO, "\f2the duel ended in a draw.");
+                    drawduel++;
+                    break;
+                default:
+                    break;
+            }
             if(m_sp) spsummary(accuracy);
 
             showscores(true);
@@ -710,6 +786,56 @@ namespace game
             execident("intermission");
         }
     }
+
+    MODVARP(saveduelstats, 0, 1, 1);
+
+    void fillICharArray4(char result[], int count) { // eeeeeh, no.4 not rly needed
+        const int maxCount = 100;
+        if (count > maxCount) count = maxCount;  // limit count to a maximum of 100
+        for (int i = 0; i < count; ++i) {
+            result[i] = 'I';
+        }
+        result[count] = '\0';  // null-terminate the string
+    }
+
+    void displayDuelStats() {
+        if (!savestats) {
+            conoutf("local stats are currently disabled, enable them via 'savestats 1'");
+            return;
+        }
+        if (!saveduelstats) {
+            conoutf("duel stats are currently disabled, enable them via 'saveduelstats 1'");
+            return;
+        }
+
+        int totalDuelGames = wonduel + drawduel + lostduel;
+        if (totalDuelGames <= 0) {
+            conoutf("no recorded duels");
+            return;
+        }
+
+        int winPercentage = totalDuelGames > 0 ? (wonduel * 100) / totalDuelGames : 0;
+        int drawPercentage = totalDuelGames > 0 ? (drawduel * 100) / totalDuelGames : 0;
+        int lossPercentage = totalDuelGames > 0 ? (lostduel * 100) / totalDuelGames : 0;
+
+        conoutf(CON_GAMEINFO, "\n\f7duel statistics:");
+
+        char winLine[101], drawLine[101], lossLine[101];
+        fillICharArray4(winLine, winPercentage);
+        fillICharArray4(drawLine, drawPercentage);
+        fillICharArray4(lossLine, lossPercentage);
+
+        conoutf("total duels: %d, wins: %d, draws: %d, losses: %d",
+                totalDuelGames, wonduel, drawduel, lostduel);
+
+        conoutf("\f0Wins:\t\f0%s\f0 %d%%", winLine, winPercentage);
+        if (drawduel > 0) conoutf("\f2Draws:\t\f2%s\f2 %d%%", drawLine, drawPercentage); // only display if there are any draws
+        conoutf("\f3Losses:\t\f3%s\f3 %d%%", lossLine, lossPercentage);
+
+        //conoutf(CON_GAMEINFO, "\f0%s\f2%s\f3%s", winLine, drawLine, lossLine); // st like display
+    }
+
+    ICOMMAND(duelstats, "", (), displayDuelStats());
 
     PLAYER_VARGS_ICOMMAND(getfrags, intret(p->frags));
     PLAYER_VARGS_ICOMMAND(getflags, intret(p->flags));
@@ -1466,7 +1592,7 @@ namespace game
     // function to render the session timer - works just like sessionlen cmd
     void renderSessionTimer(int conw, int conh, int FONTH, int roffset) {
         if(!sessionlendisplay) return;
-        int total_time_seconds = lastmillis / 1000;
+        int total_time_seconds = totalmillis / 1000; // yeeaaa update this to totalmillis cuz gamespeed scaled
         char session_timer[256];
         formatTime(total_time_seconds, session_timer, sizeof(session_timer));
 

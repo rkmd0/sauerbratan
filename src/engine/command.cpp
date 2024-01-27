@@ -3438,7 +3438,8 @@ COMMAND(strsplice, "ssii");
 ICOMMAND(getmillis, "i", (int *total), intret(*total ? totalmillis : lastmillis));
 
 ICOMMAND(sessionlen, "i", (int *total), {
-    int milliseconds = (*total ? totalmillis : lastmillis);
+    /*int milliseconds = (*total ? totalmillis : lastmillis);*/ // lmao i dont remember this
+    int milliseconds = totalmillis;
     int seconds = milliseconds / 1000;
     int minutes = seconds / 60;
     int hours = minutes / 60;
