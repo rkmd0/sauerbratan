@@ -111,6 +111,7 @@ VARP(saveduelstats, 0, 1, 1); // simple duel stats // maybe cw soon too + duels 
     MODVARP(lostduel, 0, 0, INT_MAX);
     MODVARP(wonduel, 0, 0, INT_MAX);
     MODVARP(drawduel, 0, 0, INT_MAX);
+MODVARP(clientnum2color, 0, 4, 9); // color for showclientnum 2 - default is 4 (grey)
 
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
@@ -121,7 +122,7 @@ TODO stuff that i would love to see but most likely wont:
     ...
 
 
-Ah, fuck massive todo: use totalmillis instead of lastmillis -> gamespeed scaling!!!
+
 TODO
 change colors for scoreboard
 make an extra column for flags - hideflags?
@@ -130,14 +131,13 @@ clientsided demos!!!!
 add server preview - modifiy stuff there (extinfo)
 
 
-add highlightscore 2 - loopspecs etc
+
 improve fragmsg!!!! - reference p1xbraten etc - confilter like
     add event message
 make timestamp on logfile src sided? ref:hsc
 update scoreboard - ping/modelicon/etc
 
 TODO kinda but already did
-showclientnum 2 but fixed
 update localstats - probably broken in some way but whateva
     -> add more features
 addfriend (cn) based?

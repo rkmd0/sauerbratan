@@ -29,6 +29,7 @@ namespace game
     MODVARP(showpjcolor, 0, 1, 1);
     MODVARP(spacevarp, 1, 1, 10);
     MODVARP(noseperator, 0, 0, 1);
+    MODVARP(clientnum2color, 0, 4, 9);
     
 
     void resetscoreboardcolours()
@@ -350,7 +351,7 @@ namespace game
                 const char *name = NULL; const char *alt = NULL;
                 if(!name) name = alt && o == player1 ? alt : o->name;
                 bool dup = !name[0] || duplicatename(o, name, alt) || o->aitype != AI_NONE;
-                g.textf(showclientnum < 2 || dup ? "%s " : "%s \f4[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), NULL, colorname(o), o->clientnum);
+                g.textf(showclientnum < 2 || dup ? "%s " : "%s \f%d[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), NULL, colorname(o), clientnum2color, o->clientnum);
             });
 
 
@@ -537,7 +538,7 @@ namespace game
                     const char *name = NULL; const char *alt = NULL;
                     if(!name) name = alt && o == player1 ? alt : o->name;
                     bool dup = !name[0] || duplicatename(o, name, alt) || o->aitype != AI_NONE;
-                    g.textf(showclientnum < 2 || dup ? "%s " : "%s \f4[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o), o->clientnum);
+                    g.textf(showclientnum < 2 || dup ? "%s " : "%s \f%d[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o), clientnum2color, o->clientnum);
                     //g.textf("%s ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o)); // seems to work? for showclientnum 2 purposes later..
                     if (o == player1 && highlightscore) g.poplist();
                 );
@@ -594,7 +595,7 @@ namespace game
                     const char *name = NULL; const char *alt = NULL;
                     if(!name) name = alt && o == player1 ? alt : o->name;
                     bool dup = !name[0] || duplicatename(o, name, alt) || o->aitype != AI_NONE;
-                    g.textf(showclientnum < 2 || dup ? "%s " : "%s \f4[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o), o->clientnum);
+                    g.textf(showclientnum < 2 || dup ? "%s " : "%s \f%d[%d] ", statuscolor(o, highlightscore == 2 ? namehiglight : 0xFFFFDD), icon, colorname(o), clientnum2color, o->clientnum);
                     if (o == player1 && highlightscore) g.poplist();
                 );
                 g.poplist();
