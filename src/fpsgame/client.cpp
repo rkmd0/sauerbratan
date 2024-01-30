@@ -2063,7 +2063,7 @@ namespace game
             {
                 int t = getint(p);
                 if     (t==I_QUAD)  { playsound(S_V_QUAD10, NULL, NULL, 0, 0, 0, -1, 0, 3000);  conoutf(CON_GAMEINFO, "\f2quad damage will spawn in 10 seconds!"); if(eventmsg) addfragmessage("spawns", "in 10s", 7);}
-                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2health boost will spawn in 10 seconds!"); if(eventmsg) addfragmessage("spawns", "in 10s", -1); } // I_BOOST instead of -1 also possible
+                else if(t==I_BOOST) { playsound(S_V_BOOST10, NULL, NULL, 0, 0, 0, -1, 0, 3000); conoutf(CON_GAMEINFO, "\f2health boost will spawn in 10 seconds!"); if(eventmsg) addfragmessage("spawns", "in 10s", I_BOOST); } // I_BOOST instead of -1 also possible
                 break;
             }
 
