@@ -122,6 +122,8 @@ MODVARP(clientnum2color, 0, 4, 9); // color for showclientnum 2 - default is 4 (
     MODVARP(playery, 0, 0, 10000);  // this too
     MODVARP(displaynumberstats, 0, 0, 1); // ugly way of switching between numberdisplay and bar display
 
+MODVARP(crosshairbump, 0, 1, 1);
+
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
 

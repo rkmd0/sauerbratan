@@ -2079,10 +2079,51 @@ VARP(crosshairsize, 0, 15, 50);
 VARP(cursorsize, 0, 30, 50);
 VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
+
 MODHVARP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF);
+MODVARP(crosshairbump, 0, 1, 1); 
 
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
+
+// credits to supersauer mod
+int prev_size;
+int current_millis;
+bool enable_fx = false;
+
+void adjust_crosshair_size() {
+    if (!enable_fx) return;
+
+    if (prev_size == crosshairsize || !prev_size) 
+        prev_size = crosshairsize;
+
+    if (enable_fx) {
+        enable_fx = false;
+        crosshairsize = prev_size;
+    }
+    enable_fx = true;
+}
+
+void check_crosshair_bump() {
+    if (!crosshairbump) return;
+
+    if (enable_fx && prev_size == crosshairsize) {
+        crosshairsize += 20;
+        current_millis = lastmillis;
+    }
+
+    if (lastmillis >= (current_millis + 10) && enable_fx) {
+        crosshairsize -= 2;
+        current_millis = lastmillis;
+    }
+
+    if (enable_fx && crosshairsize <= prev_size) {
+        crosshairsize = prev_size;
+        enable_fx = false;
+        prev_size = 0;
+    }
+}
+
 
 void loadcrosshair(const char *name, int i)
 {
@@ -2235,6 +2276,7 @@ void gl_drawhud()
     {
         drawdamagescreen(w, h);
         drawdamagecompass(w, h);
+        check_crosshair_bump();
     }
 
     hudshader->set();
