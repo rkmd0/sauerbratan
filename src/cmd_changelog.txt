@@ -113,12 +113,25 @@ VARP(saveduelstats, 0, 1, 1); // simple duel stats // maybe cw soon too + duels 
     MODVARP(drawduel, 0, 0, INT_MAX);
 MODVARP(clientnum2color, 0, 4, 9); // color for showclientnum 2 - default is 4 (grey)
 
+// playerdisplay for spec(!) only
+    // might need to delete this eventually, if i ever plan on publish this kind due to abuse reasons
+    MODVARP(showplayerstats, 0, 1, 1);
+    MODVARP(displayarmourstatus, 0, 0, 1); // 1 -> added to the health bar, 2 -> under the health bar (todo)
+    // x and y coordinates, manually put
+    MODVARP(playerx, 0, 37, 10000); // need to manually put this, ideally though automatically on the same spot for every player
+    MODVARP(playery, 0, 0, 10000);  // this too
+    MODVARP(displaynumberstats, 0, 0, 1); // ugly way of switching between numberdisplay and bar display
+
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
 
 TODO stuff that i would love to see but most likely wont:
     clientdemos
+    demotime/demoskip
+    spec features, auto switch prov (teammates, flagcarrier, etc)
+    crosshairbumb
     fixed serverpreview
+    make fillICharArray45 and fillICharArray50 VARP dependant
     ...
 
 

@@ -1513,6 +1513,40 @@ namespace game
         }
         result[count] = '\0';  // null-terminate the string
     }
+
+    // blabla
+    // need to eventually redo this to make it more dynamically scalable
+    void fillICharArray45(char result[], int count) {
+        int charsPerGroup = 4;
+        int lines = (count + charsPerGroup - 1) / charsPerGroup;
+
+        for (int i = 0; i < lines; ++i) {
+            result[i] = 'I';
+        }
+        result[lines] = '\0';
+    }
+
+    void fillICharArray50(char result[], int count) {
+        int charsPerGroup = (count <= 100) ? 10 : 20;
+        int lines = (count + charsPerGroup - 1) / charsPerGroup;
+
+        for (int i = 0; i < lines; ++i) {
+            result[i] = 'I';
+        }
+        result[lines] = '\0';
+    }
+    ///
+
+
+    // needed for the quadtimer (playerdisplay)
+    void millis2timer(int millis, char *timerStr, size_t size) {
+        int seconds = (millis / 1000) % 60;
+        int minutes = millis / (1000 * 60);
+
+        snprintf(timerStr, size, "%d:%02d", minutes, seconds);
+    }
+
+
     
     MODVARP(playercounter, 0, 1, 1);
 
@@ -1672,10 +1706,224 @@ namespace game
         return true;
     }
 
+    // playerdisplay for spec(!) only
+    // might need to delete this eventually, if i ever plan on publish this kind due to abuse reasons
+    MODVARP(showplayerstats, 0, 1, 1);
+    MODVARP(displayarmourstatus, 0, 0, 1); // 1 -> added to the health bar, 2 -> under the health bar (todo)
+    MODVARP(playerx, 0, 37, 10000); // need to manually put this, ideally though automatically on the same spot for every player
+    MODVARP(playery, 0, 0, 10000);  // this too
+    MODVARP(displaynumberstats, 0, 0, 1); // ugly
+
+    // a lot of 'playing around'
+    void drawplayerdisplays(int conw, int conh, int FONTH)
+        {
+            if(!showplayerstats) return;
+            if(displaynumberstats) return;
+            int y_offset = 0;
+
+            char quadTimer[10];
+
+        if (player1->state == CS_SPECTATOR) {
+            const char *teamName = m_teammode ? (strcmp(player1->team, "evil") == 0 ? "\f1good" : "\f3evil") : "";
+            const char *playerName = "players";
+            draw_text(m_teammode ? teamName : playerName, playerx, playery + y_offset); // display 'player' when not in team mode
+
+            y_offset += FONTH;
+        }
+
+
+        loopv(players)
+            {
+
+                fpsent *p = players[i];
+                if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || isteam(player1->team, p->team))
+                    continue;
+                millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
+                int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
+                const char *name = colorname(p);
+
+                int x = playerx;
+                int y = playery + y_offset;
+
+                //int namecolor = statuscolor(p, 0xFFFFDD);
+                int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
+                char playerInfo[256];
+                snprintf(playerInfo, sizeof(playerInfo), "%s%s %s%s", p->quadmillis ? "\f7" : "", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                //snprintf(playerInfo, sizeof(playerInfo), "%s", name);
+                draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
+
+                if(!m_insta) {
+                    y += FONTH;
+                    char healthStr[256];
+                    char armourSr[256];
+                    fillICharArray50(armourSr, p->armour);
+                    fillICharArray45(healthStr, p->health);
+                    const char *healthColorCode = p->quadmillis ? "\f7" : (p->health >= 50) ? "\f0" : (p->health >= 25) ? "\f2" : (p->health >= 10) ? "\f6" : "\f4";
+                    const char *armourColorCode = p->armour > 100 ? "\f5" : "\f8";
+                    draw_textf("%s%s%s%s", x, y, healthColorCode, healthStr, displayarmourstatus == 1 ? armourColorCode : "", displayarmourstatus == 1 ? armourSr : "");
+                }
+
+                // display armor under the health
+                //y += FONTH;  // Move down by one more line
+                //char armorStr[256];  // Assuming you have a maximum length for the string
+                //fillICharArray45(armorStr, p->armour);
+                //draw_text(armorStr, x, y);
+
+                // Adjust y_offset using a ternary conditional operator
+                y_offset += (!m_insta) ? 2 * FONTH : FONTH;
+
+            }
+
+            if(m_teammode || player1->state == CS_SPECTATOR ) {
+                y_offset += FONTH;
+                const char *teamName = m_teammode ? strcmp(player1->team, "good") == 0 ? "\f1good" : "\f3evil"  : "";
+                draw_text(teamName, playerx, playery + y_offset);
+                y_offset += FONTH;
+            }
+
+
+            loopv(players)
+            {
+
+                fpsent *p = players[i];
+                if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || !isteam(player1->team, p->team))
+                    continue;
+                millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
+                int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
+                const char *name = colorname(p);
+
+                int x = playerx;
+                int y = playery + y_offset;
+
+                //int namecolor = statuscolor(p, 0xFFFFDD);
+                int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
+                char playerInfo[256];  
+                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
+
+                if(!m_insta) {
+                    y += FONTH;
+                    char healthStr[256];
+                    char armourSr[256];
+                    fillICharArray50(armourSr, p->armour);
+                    fillICharArray45(healthStr, p->health);
+                    const char *healthColorCode = p->quadmillis ? "\f7" : (p->health >= 50) ? "\f0" : (p->health >= 25) ? "\f2" : (p->health >= 10) ? "\f6" : "\f4";
+                    const char *armourColorCode = p->armour > 100 ? "\f5" : "\f8";
+                    draw_textf("%s%s%s%s", x, y, healthColorCode, healthStr, displayarmourstatus == 1 ? armourColorCode : "", displayarmourstatus == 1 ? armourSr : "");
+                }
+                y_offset += (!m_insta) ? 2 * FONTH : FONTH; // should probably also have the option to not add a health/armour display for all modes
+
+            }
+        }
+        // same code with numbers (sigh)
+        void drawplayerdisplaysnumbers(int conw, int conh, int FONTH)
+        {
+            if(!showplayerstats) return;
+            if(!displaynumberstats) return;
+            int y_offset = 0;
+
+            char quadTimer[10];
+
+        if (player1->state == CS_SPECTATOR) {
+            const char *teamName = m_teammode ? (strcmp(player1->team, "evil") == 0 ? "\f1good" : "\f3evil") : "";
+            const char *playerName = "players";
+            draw_text(m_teammode ? teamName : playerName, playerx, playery + y_offset);
+
+            y_offset += FONTH;
+        }
+
+
+
+            loopv(players)
+            {
+
+                fpsent *p = players[i];
+                if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || isteam(player1->team, p->team))
+                    continue;
+                millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
+                int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
+                const char *name = colorname(p);
+
+                int x = playerx;
+                int y = playery + y_offset;
+
+                //int namecolor = statuscolor(p, 0xFFFFDD);
+                int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
+                char playerInfo[256];
+                snprintf(playerInfo, sizeof(playerInfo), "%s%s %s%s", p->quadmillis ? "\f7" : "", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                //snprintf(playerInfo, sizeof(playerInfo), "%s", name);
+                draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
+
+                if (!m_insta) {
+                    y += FONTH;
+                    // clamping negative health and armor values to zero
+                    int clampedHealth = p->health >= 0 ? p->health : 0;
+                    int clampedArmour = p->armour >= 0 ? p->armour : 0;
+                    const char *healthColorCode = p->quadmillis ? "\f7" : (clampedHealth >= 50) ? "\f0" : (clampedHealth >= 25) ? "\f2" : (clampedHealth >= 10) ? "\f6" : "\f4";
+                    const char *armourColorCode = clampedArmour > 100 ? "\f5" : "\f8";
+                    if (displayarmourstatus != 1) {
+                        draw_textf("%s%d", x, y, healthColorCode, clampedHealth);
+                    } else {
+                        draw_textf("%s%d\f7/%s%d", x, y, healthColorCode, clampedHealth, armourColorCode, clampedArmour);
+                    }
+
+                }
+                y_offset += (!m_insta) ? 2 * FONTH : FONTH;
+
+            }
+
+            if(m_teammode && player1->state == CS_SPECTATOR ) {
+                y_offset += FONTH;
+                const char *teamName = m_teammode ? strcmp(player1->team, "good") == 0 ? "\f1good" : "\f3evil"  : "";
+                draw_text(teamName, playerx, playery + y_offset);
+                y_offset += FONTH;
+            }
+
+
+            loopv(players)
+            {
+
+                fpsent *p = players[i];
+                if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || !isteam(player1->team, p->team))
+                    continue;
+                millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
+                int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
+                const char *name = colorname(p);
+
+                int x = playerx;
+                int y = playery + y_offset;
+
+                //int namecolor = statuscolor(p, 0xFFFFDD);
+                int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
+                char playerInfo[256];
+                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
+
+            if (!m_insta) {
+                y += FONTH;
+                // clamping negative health and armor values to zero
+                int clampedHealth = p->health >= 0 ? p->health : 0;
+                int clampedArmour = p->armour >= 0 ? p->armour : 0;
+                const char *healthColorCode = p->quadmillis ? "\f7" : (clampedHealth >= 50) ? "\f0" : (clampedHealth >= 25) ? "\f2" : (clampedHealth >= 10) ? "\f6" : "\f4";
+                const char *armourColorCode = clampedArmour > 100 ? "\f5" : "\f8";
+                if (displayarmourstatus != 1) {
+                        draw_textf("%s%d", x, y, healthColorCode, clampedHealth);
+                } else {
+                    draw_textf("%s%d\f7/%s%d", x, y, healthColorCode, clampedHealth, armourColorCode, clampedArmour);
+                }
+            }
+                y_offset += (!m_insta) ? 2 * FONTH : FONTH;
+
+            }
+        }
+
+
     bool renderstatsdisplay(int conw, int conh, int woffset, int FONTH, int roffset){
         renderweaponstats(conw, conh, woffset, FONTH, roffset);
         renderSessionTimer(conw, conh, FONTH, roffset);
         renderAlivePlayersByTeam(conw, conh, roffset, FONTH);
+        if(displaynumberstats) { drawplayerdisplaysnumbers(conw, conh, FONTH); } 
+        else { drawplayerdisplays(conw, conh, FONTH); }
         return true;
     }
 

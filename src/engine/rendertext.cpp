@@ -230,7 +230,7 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
             case '6': color = bvec(255, 128,   0); break;   // orange
             case '7': color = bvec(255, 255, 255); break;   // white
             case '8': color = bvec( 96, 240, 255); break;   // cyan
-            case '9':  // :sparkles: colors :sparkles: 
+            case 'b':  // :sparkles: colors :sparkles:      // 'bunt'
             {
                 int t = lastmillis % 24000;
                 int r = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * t / 6000.0)), 0, 255);
@@ -245,6 +245,20 @@ static void text_color(char c, char *stack, int size, int &sp, bvec color, int a
         gle::color(color, a);
     } 
 }
+
+/*
+            case '9':  // quad loop coloring - changes between red and grey
+            {
+                int t = lastmillis % 24000;
+                float lerpFactor = 0.5 + 0.5 * sin(2 * M_PI * 0.0005 * t);  // Adjust the frequency for the speed of the transition
+                int r = static_cast<int>((1.0 - lerpFactor) * 59 + lerpFactor * 250);  // Interpolating between 59 and 250
+                int g = static_cast<int>((1.0 - lerpFactor) * 59 + lerpFactor * 47);
+                int b = static_cast<int>((1.0 - lerpFactor) * 59 + lerpFactor * 47);
+
+                color = bvec(clamp(r, 0, 255), clamp(g, 0, 255), clamp(b, 0, 255));
+                break;
+            }
+*/
 
 #define TEXTSKELETON \
     float y = 0, x = 0, scale = curfont->scale/float(curfont->defaulth);\
