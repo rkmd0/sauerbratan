@@ -8,6 +8,7 @@ namespace game
     int respawnent = -1;
     int lasthit = 0, lastspawnattempt = 0;
 
+    int lastfollowkiller = -1;
     int following = -1, followdir = 0;
 
     fpsent *player1 = NULL;         // our client
@@ -118,6 +119,7 @@ namespace game
     {
         if(following<0) return;
         following = -1;
+        lastfollowkiller = -1;
         followdir = 0;
         clearfragmessages();
         conoutf("follow off");
@@ -239,6 +241,7 @@ namespace game
             player1->health++;
         }
     }
+    extern void checkautofollow();
 
     void updateworld()        // main game update loop
     {
@@ -290,6 +293,7 @@ namespace game
                 else if(cmode) cmode->checkitems(player1);
             }
         }
+        checkautofollow();
         if(player1->clientnum>=0) c2sinfo();   // do this last, to reduce the effective frame lag
     }
 
@@ -633,6 +637,9 @@ namespace game
         if(cmode) cmode->died(d, actor);
 
         fpsent *h = followingplayer(player1);
+        if(h==d) {
+            lastfollowkiller = actor->clientnum;
+        }
         int contype = d==h || actor==h ? CON_FRAG_SELF : CON_FRAG_OTHER;
         const char *dname = "", *aname = "";
         if(m_teammode && teamcolorfrags)
@@ -883,6 +890,9 @@ namespace game
         unignore(cn);
         fpsent *d = clients[cn];
         if(!d) return;
+        if(lastfollowkiller == d->clientnum) {
+            lastfollowkiller = -1;
+        }
         if(notify && d->name[0]) conoutf("\f4leave:\f7 %s", colorname(d));
         removeweapons(d);
         removetrackedparticles(d);

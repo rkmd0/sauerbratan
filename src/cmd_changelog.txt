@@ -125,6 +125,14 @@ MODVARP(clientnum2color, 0, 4, 9); // color for showclientnum 2 - default is 4 (
 MODVARP(crosshairbump, 0, 1, 1);
 MODVARP(bumpsize, 0, 20, 50);
 
+// autofollow credit to https://github.com/extra-a/sauer-sdl2
+// what exactly is autofollow? - it's a feature that allows you to follow a player without having to manually switch to them
+    MODVARP(disableautofollow, 0, 0, 1);
+    MODVARP(autofollowflagcarrier, 0, 0, 1);
+    MODVARP(autofollowchangewhenkilled, 0, 0, 2);
+    MODVARP(autofollowonlysameteam, 0, 0, 1);
+    MODVARP(autofollowdelay, 0, 100, 200);
+
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
 

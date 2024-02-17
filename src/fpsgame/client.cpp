@@ -105,10 +105,111 @@ namespace game
     #include "ctf.h"
     #include "collect.h"
 
+    // add auto switch follow - credit to https://github.com/extra-a/sauer-sdl2
+    bool flagstatechanged = false;
+
     clientmode *cmode = NULL;
     captureclientmode capturemode;
     ctfclientmode ctfmode;
     collectclientmode collectmode;
+
+    extern int lastfollowkiller;
+    MODVARP(disableautofollow, 0, 0, 1);
+    MODVARP(autofollowflagcarrier, 0, 0, 1);
+    MODVARP(autofollowchangewhenkilled, 0, 0, 2);
+    MODVARP(autofollowonlysameteam, 0, 0, 1);
+    MODVARP(autofollowdelay, 0, 100, 200);
+
+    int getmaxhpteammate(fpsent* f) {
+        int n = -1;
+        int maxvalue = INT_MIN;
+        loopv(players) {
+            fpsent* c = players[i];
+            if(c && isteam(f->team, c->team) && c->state == CS_ALIVE) {
+                if(!m_insta && c->health > maxvalue) {
+                    maxvalue = c->health;
+                    n = c->clientnum;
+                }
+                if(m_insta && c->frags > maxvalue) {
+                   maxvalue = c->frags;
+                   n = c->clientnum;
+                }
+            }
+        }
+        return n;
+    }
+
+    void checkautofollow() {
+        if(disableautofollow) return;
+        static uint eventtime = 0;
+        static int possiblefollow = -1;
+
+        fpsent* f = followingplayer();
+        if(!f) return;
+
+        uint current_tick = SDL_GetTicks();
+
+        int killer = lastfollowkiller;
+        lastfollowkiller = -1;
+        bool statechanged = flagstatechanged;
+        flagstatechanged = false;
+
+        if(autofollowflagcarrier && statechanged) {
+            int owner = -1;
+            int newfollow = -1;
+            fpsent* fo = NULL;
+            loopv(ctfmode.flags) {
+                fo = ctfmode.flags[i].owner;
+                if(!fo) {
+                    continue;
+                }
+                owner = fo->clientnum;
+                if(owner < 0) {
+                    continue;
+                }
+                if(owner == f->clientnum) {
+                    newfollow = -1;
+                    return;
+                }
+                if(autofollowonlysameteam && m_teammode) {
+                    fpsent* c = clients[owner];
+                    if(c && isteam(f->team, c->team)) {
+                        newfollow = owner;
+                    }
+                } else {
+                    newfollow = owner;
+                }
+            }
+            if(newfollow >= 0) {
+                possiblefollow = newfollow;
+                eventtime = current_tick;
+            }
+        }
+
+        if(possiblefollow < 0 && autofollowchangewhenkilled && killer >= 0) {
+            if(autofollowonlysameteam && m_teammode) {
+                possiblefollow = getmaxhpteammate(f);
+            } else {
+                if(autofollowchangewhenkilled == 2 && m_teammode) {
+                    fpsent* k = clients[killer];
+                    if(k) {
+                        possiblefollow = getmaxhpteammate(k);
+                    }
+                } else {
+                    possiblefollow = killer;
+                }
+            }
+            if(possiblefollow >= 0) {
+                eventtime = current_tick;
+            }
+        }
+
+        if(possiblefollow >= 0 && clients[possiblefollow] && current_tick > eventtime + autofollowdelay) {
+            following = possiblefollow;
+            possiblefollow = -1;
+        }
+    }
+
 
      // checks if a player is carrying the flag
     // 0 => no flag; 1 => team good or neutral (m_hold); 2 => team evil
