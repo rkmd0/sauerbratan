@@ -299,7 +299,7 @@ extern void removetrackeddynlights(physent *owner = NULL);
 extern physent *camera1;
 extern vec worldpos, camdir, camright, camup;
 
-extern void adjust_crosshair_size();
+extern void crosshairbumpeffect();
 
 extern void disablezoom();
 

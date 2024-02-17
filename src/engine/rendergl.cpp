@@ -2081,49 +2081,48 @@ VARP(crosshairfx, 0, 1, 1);
 VARP(crosshaircolors, 0, 1, 1);
 
 MODHVARP(crosshaircolor, 0, 0xFFFFFF, 0xFFFFFF);
-MODVARP(crosshairbump, 0, 1, 1); 
+MODVARP(crosshairbump, 0, 1, 1);
+MODVARP(bumpsize, 0, 20, 50);
 
 #define MAXCROSSHAIRS 4
 static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
 
 // credits to supersauer mod
-int prev_size;
-int current_millis;
-bool enable = false;
-
-void adjust_crosshair_size() {
-    if (!enable) return;
-
-    if (prev_size == crosshairsize || !prev_size) 
-        prev_size = crosshairsize;
-
-    if (enable) {
-        enable = false;
-        crosshairsize = prev_size;
+int oldsize;
+int cmillis;
+bool dofx = false;
+void crosshairbumpeffect()
+{
+	if(!crosshairbump) return;
+    if(oldsize == crosshairsize || !oldsize) oldsize = crosshairsize;
+    if(dofx)
+    {
+        dofx = false;
+        crosshairsize = oldsize;
     }
-    enable = true;
+    dofx = true;
 }
-
-void check_crosshair_bump() {
+void crosshairbumpcheck()
+{
     if (!crosshairbump) return;
-
-    if (enable && prev_size == crosshairsize) {
-        crosshairsize += 20;
-        current_millis = lastmillis;
+    if (dofx && oldsize == crosshairsize)
+    {
+        //crosshairsize += 20;
+        crosshairsize += bumpsize; // use bumpsize to dynamically scale the bump effect
+        cmillis = lastmillis;
     }
-
-    if (lastmillis >= (current_millis + 10) && enable) {
+    if (lastmillis >= (cmillis + 10) && dofx)
+    {
         crosshairsize -= 2;
-        current_millis = lastmillis;
+        cmillis = lastmillis;
     }
-
-    if (enable && crosshairsize <= prev_size) {
-        crosshairsize = prev_size;
-        enable = false;
-        prev_size = 0;
+    if (dofx && crosshairsize <= oldsize)
+    {
+        crosshairsize = oldsize;
+        dofx = false;
+        oldsize = 0;
     }
 }
-
 
 void loadcrosshair(const char *name, int i)
 {
@@ -2276,7 +2275,7 @@ void gl_drawhud()
     {
         drawdamagescreen(w, h);
         drawdamagecompass(w, h);
-        check_crosshair_bump();
+        crosshairbumpcheck();
     }
 
     hudshader->set();
