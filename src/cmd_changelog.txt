@@ -132,15 +132,16 @@ MODVARP(bumpsize, 0, 20, 50);
     MODVARP(autofollowchangewhenkilled, 0, 0, 2);
     MODVARP(autofollowonlysameteam, 0, 0, 1);
     MODVARP(autofollowdelay, 0, 100, 200);
+// clientsided demos, lets see how this will work out - credit to frosty
+    MODVARP(recordclientdemo, 0, 0, 1);
+    ICOMMAND(startclientdemo, "", (), setupdemorecord());
+    ICOMMAND(stopclientdemo, "", (), enddemorecord());
 
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
 
 TODO stuff that i would love to see but most likely wont:
-    clientdemos
     demotime/demoskip
-    spec features, auto switch prov (teammates, flagcarrier, etc)
-    crosshairbumb
     fixed serverpreview
     make fillICharArray45 and fillICharArray50 VARP dependant
     ...

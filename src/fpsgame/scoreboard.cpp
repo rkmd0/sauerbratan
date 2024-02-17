@@ -50,7 +50,7 @@ namespace game
     });
 
 
-    static hashset<teaminfo> teaminfos;
+    hashset<teaminfo> teaminfos;
 
     void clearteaminfo()
     {

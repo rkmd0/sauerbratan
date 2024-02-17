@@ -719,6 +719,8 @@ namespace game
         virtual bool aicheck(fpsent *d, ai::aistate &b) { return false; }
         virtual bool aidefend(fpsent *d, ai::aistate &b) { return false; }
         virtual bool aipursue(fpsent *d, ai::aistate &b) { return false; }
+        virtual void initdemoclient(packetbuf &p) {}
+
     };
 
     extern clientmode *cmode;
@@ -770,8 +772,11 @@ namespace game
     const char *mastermodeicon(int n, const char *unknown);
 
     // client
-    extern bool connected, remote, demoplayback;
+    extern bool connected, remote, demoplayback, gamepaused;
     extern string servinfo;
+    extern int mastermode, gamespeed;
+    extern hashset<teaminfo> teaminfos;
+
     extern vector<uchar> messages;
 
     extern int parseplayer(const char *arg);
@@ -788,6 +793,14 @@ namespace game
     extern void forceintermission();
     extern void c2sinfo(bool force = false);
     extern void sendposition(fpsent *d, bool reliable = false);
+    extern int recordclientdemo;
+    extern bool demonextmatch;
+    extern stream *demorecord;
+    extern void setupdemorecord();
+    extern void recordpacket(int chan, uchar *data, int len);
+    extern bool recordmsg(int type, const char *fmt = NULL, ...);
+    extern void enddemorecord();
+
     extern int hasflag(fpsent *d);
     extern int hasflagForTeam(const char* team);
 

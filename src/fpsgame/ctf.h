@@ -449,6 +449,9 @@ struct ctfclientmode : clientmode
     }
 
     void initclient(clientinfo *ci, packetbuf &p, bool connecting)
+#else
+    void initdemoclient(packetbuf &p)
+#endif
     {
         putint(p, N_INITFLAGS);
         loopk(2) putint(p, scores[k]);
@@ -458,9 +461,16 @@ struct ctfclientmode : clientmode
             flag &f = flags[i];
             putint(p, f.version);
             putint(p, f.spawnindex);
+#ifdef SERVMODE
             putint(p, f.owner);
             putint(p, f.invistime ? 1 : 0);
             if(f.owner<0)
+#else
+            putint(p, f.owner ? f.owner->clientnum : -1);
+            putint(p, f.vistime ? 0 : 1);
+            if(!f.owner)
+#endif
+
             {
                 putint(p, f.droptime ? 1 : 0);
                 if(f.droptime)
@@ -481,6 +491,7 @@ struct ctfclientmode : clientmode
             }
         }
     }
+#ifdef SERVMODE
 
     void parseflags(ucharbuf &p, bool commit)
     {

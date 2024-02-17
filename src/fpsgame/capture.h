@@ -701,6 +701,30 @@ struct captureclientmode : clientmode
 		return aidefend(d, b);
 	}
 };
+    // clientsided demos
+    void initdemoclient(packetbuf &p)
+    {
+        loopv(scores)
+        {
+            score &cs = scores[i];
+            putint(p, N_BASESCORE);
+            putint(p, -1);
+            sendstring(cs.team, p);
+            putint(p, cs.total);
+        }
+        putint(p, N_BASES);
+        putint(p, bases.length());
+        loopv(bases)
+        {
+            baseinfo &b = bases[i];
+            putint(p, b.ammotype);
+            sendstring(b.owner, p);
+            sendstring(b.enemy, p);
+            putint(p, b.converted);
+            putint(p, b.ammo);
+        }
+    }
+
 
 extern captureclientmode capturemode;
 ICOMMAND(repammo, "", (), capturemode.replenishammo());
