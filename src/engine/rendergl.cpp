@@ -2089,37 +2089,37 @@ static Texture *crosshairs[MAXCROSSHAIRS] = { NULL, NULL, NULL, NULL };
 // credits to supersauer mod
 int prev_size;
 int current_millis;
-bool enable_fx = false;
+bool enable = false;
 
 void adjust_crosshair_size() {
-    if (!enable_fx) return;
+    if (!enable) return;
 
     if (prev_size == crosshairsize || !prev_size) 
         prev_size = crosshairsize;
 
-    if (enable_fx) {
-        enable_fx = false;
+    if (enable) {
+        enable = false;
         crosshairsize = prev_size;
     }
-    enable_fx = true;
+    enable = true;
 }
 
 void check_crosshair_bump() {
     if (!crosshairbump) return;
 
-    if (enable_fx && prev_size == crosshairsize) {
+    if (enable && prev_size == crosshairsize) {
         crosshairsize += 20;
         current_millis = lastmillis;
     }
 
-    if (lastmillis >= (current_millis + 10) && enable_fx) {
+    if (lastmillis >= (current_millis + 10) && enable) {
         crosshairsize -= 2;
         current_millis = lastmillis;
     }
 
-    if (enable_fx && crosshairsize <= prev_size) {
+    if (enable && crosshairsize <= prev_size) {
         crosshairsize = prev_size;
-        enable_fx = false;
+        enable = false;
         prev_size = 0;
     }
 }
