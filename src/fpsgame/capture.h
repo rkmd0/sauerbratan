@@ -700,7 +700,7 @@ struct captureclientmode : clientmode
 		b.type = ai::AI_S_DEFEND;
 		return aidefend(d, b);
 	}
-};
+
     // clientsided demos
     void initdemoclient(packetbuf &p)
     {
@@ -724,6 +724,8 @@ struct captureclientmode : clientmode
             putint(p, b.ammo);
         }
     }
+};
+
 
 
 extern captureclientmode capturemode;

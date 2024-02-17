@@ -1168,7 +1168,7 @@ namespace game
                 q.put((falldir>>8)&0xFF);
             }
         }
-        if(demorecord && (d==player1 || d->ai)) recordpacket(0, q.buf+offset, q.length());
+        if(demorecord && (d==player1 || d->ai)) recordpacket(0, q.buf+offset, q.length()-offset);
     }
 
     void sendposition(fpsent *d, bool reliable)
@@ -1243,7 +1243,7 @@ namespace game
         static int lastdemopos = -1000;
         if(totalmillis - lastupdate < 8 && !force)
         {
-            if(demorecord && totalmillis - lastdemopos >= 8 && player1->state == CS_ALIVE) // 125pps player1 positions
+            if(demorecord && player1->state==CS_ALIVE && totalmillis-lastdemopos>=8) // 125pps player1 positions
             {
                 static packetbuf q(100);
                 sendposition(player1, q);

@@ -701,7 +701,9 @@ namespace game
     void drawhudscore(int w, int h)
     {
         int numgroups = groupplayers();
-        if(!numgroups) return;
+        //if(!numgroups) return; // fix?
+        if(!numgroups || (m_teammode ? numgroups : groups[0]->players.length()) < 2) return;
+
 
         scoregroup *g = groups[0];
         int score = INT_MIN, score2 = INT_MIN;

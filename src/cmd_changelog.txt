@@ -139,11 +139,14 @@ MODVARP(bumpsize, 0, 20, 50);
 
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
+    add color loop to all weapons
+    add uhh installer
 
 TODO stuff that i would love to see but most likely wont:
     demotime/demoskip
     fixed serverpreview
     make fillICharArray45 and fillICharArray50 VARP dependant
+    add a hud 'rec' symbol - for clientdemos
     ...
 
 
@@ -152,8 +155,11 @@ TODO
 change colors for scoreboard
 make an extra column for flags - hideflags?
 birthday saver? (hash set test)
-clientsided demos!!!!
 add server preview - modifiy stuff there (extinfo)
+surely improve clientdemos in some way
+change playericon with flagtaken symbol in scoreboard
+should we still have hideping?
+
 
 
 
