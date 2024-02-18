@@ -135,6 +135,14 @@ MODVARP(bumpsize, 0, 20, 50);
     ICOMMAND(stopclientdemo, "", (), enddemorecord());
 MODVARP(enablerec, 0, 1, 1); // record indicator - fades in and out
 add flagrun measure included into scored-message
+// traverse demos!!! - credits: happyclient by origin
+// bugged - overtime doesnt work
+    MODVARP(allowdemofollow, 0, 1, 1); // needs to be activated to allow following the same player
+    // -> however this is bugged too! - need to fix damagescreenmillis 
+    // -> best way to 'fix' this is temporary disable the damagescreen
+    bind 8  damagescreen 0; onrelease [ damagescreen 1]
+    ICOMMAND(demotime, "ii", (int *m, int *s), { jumptotime(10*60 - (*m*60 + *s)); });
+    ICOMMAND(demoskip, "ii", (int *m, int *s), { jumptotime(*m*60 + *s); });
 
 
 TODOS before first 'release':
@@ -143,7 +151,6 @@ TODOS before first 'release':
     add uhh installer
 
 TODO stuff that i would love to see but most likely wont:
-    demotime/demoskip
     fixed serverpreview
     make fillICharArray45 and fillICharArray50 VARP dependant
     ...

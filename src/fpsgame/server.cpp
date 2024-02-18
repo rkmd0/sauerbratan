@@ -603,7 +603,7 @@ namespace server
 
     bool demonextmatch = false;
     stream *demotmp = NULL, *demorecord = NULL, *demoplayback = NULL;
-    int nextplayback = 0;
+    int nextplayback = 0, demomillis = 0;
 
     VAR(maxdemos, 0, 5, 25);
     VAR(maxdemosize, 0, 16, 31);
@@ -1234,6 +1234,7 @@ namespace server
 
         sendservmsgf("playing demo \"%s\"", file);
 
+        demomillis = 0;
         sendf(-1, 1, "ri3", N_DEMOPLAYBACK, 1, -1);
 
         if(demoplayback->read(&nextplayback, sizeof(nextplayback))!=sizeof(nextplayback))
@@ -1244,10 +1245,39 @@ namespace server
         lilswap(&nextplayback, 1);
     }
 
+    MODVARP(allowdemofollow, 0, 1, 1);
+    int jumptoonce = -1;
+	void changemap(const char *s, int mode);
+
+	void jumptotime(int secs)
+	{
+		if (secs*1000 < demomillis && jumptoonce < 0)
+		{
+		    int follow_client = game::following >= 0 ? game::followingplayer()->clientnum : -1;
+			jumptoonce = secs;
+			changemap(smapname, gamemode);
+            if (follow_client >= 0 && allowdemofollow)
+            {
+                game::following = follow_client;
+            }
+		}
+		else
+		{
+			jumptoonce = -1;
+			demomillis = secs*1000;
+			sendf(-1, 1, "rii", N_TIMEUP, 10*60 - secs);
+		}
+	}
+
+	ICOMMAND(demotime, "ii", (int *m, int *s), { jumptotime(10*60 - (*m*60 + *s)); });
+	ICOMMAND(demoskip, "ii", (int *m, int *s), { jumptotime(*m*60 + *s); });
+
+
     void readdemo()
     {
         if(!demoplayback) return;
-        while(gamemillis>=nextplayback)
+        demomillis += curtime;
+        while(demomillis>=nextplayback)
         {
             int chan, len;
             if(demoplayback->read(&chan, sizeof(chan))!=sizeof(chan) ||
@@ -1267,6 +1297,7 @@ namespace server
             }
             packet->data[0] = N_DEMOPACKET;
             sendpacket(-1, chan, packet);
+            if (jumptoonce >= 0) jumptotime(jumptoonce);
             if(!packet->referenceCount) enet_packet_destroy(packet);
             if(!demoplayback) break;
             if(demoplayback->read(&nextplayback, sizeof(nextplayback))!=sizeof(nextplayback))
