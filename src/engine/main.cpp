@@ -42,7 +42,7 @@ MODSVARP(selfservicemsg, "flowerbraten");
 void versioninfostarter()
 {
 
-    conoutf("%s%s \f7- powered by blumenservice", allowversionmsgcolor ? "\f9" : "\f7", selfservicemsg);
+    conoutf("%s%s \f7- powered by blumenservice", allowversionmsgcolor ? "\fb" : "\f7", selfservicemsg);
 }
 
 ICOMMAND(versioninfo, "", (), versioninfostarter());

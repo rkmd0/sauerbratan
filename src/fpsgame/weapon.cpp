@@ -230,13 +230,28 @@ namespace game
         adddecal(DECAL_BLOOD, vec(b->o).sub(vec(surface).mul(b->radius)), surface, 2.96f/b->bounces, bvec(0x60, 0xFF, 0xFF), rnd(4));
     }
 
-    // add custom trail colors
+    // add custom trail colors + color loop :sparkles:
     MODHVARP(trailcolorgl, 0, 0x404040, 0xFFFFFF);
     MODHVARP(trailcolorrl, 0, 0x404040, 0xFFFFFF);
     MODHVARP(trailcolorsg, 0, 0xFFC864, 0xFFFFFF);
     MODHVARP(trailcolorcg, 0, 0xFFC864, 0xFFFFFF);
     MODHVARP(trailcolorri, 0, 0x404040, 0xFFFFFF);
     MODHVARP(trailcolorpi, 0, 0xFFC864, 0xFFFFFF);
+    MODVARP(coloredtrails, 0, 1, 1);
+    // its enough
+    /*MODVARP(customred, 0, 16, 128);
+    MODVARP(customgreen, 0, 8, 128);
+    MODVARP(customblue, 0, 1, 128);*/
+
+    int calctrailcolor(float frequencymultiplier) {
+        if(!coloredtrails) return 0;
+        int t = lastmillis % 6000;
+        int r = clamp(128 + static_cast<int>(128 * sin(2 * M_PI * frequencymultiplier * t / 6000.0)), 0, 255);
+        int g = clamp(128 + static_cast<int>(128 * sin(2 * M_PI * frequencymultiplier * (t + 1000) / 6000.0)), 0, 255);
+        int b = clamp(128 + static_cast<int>(128 * sin(2 * M_PI * frequencymultiplier * (t + 2000) / 6000.0)), 0, 255);
+        return 0xFF0000 | (r << 16) | (g << 8) | b;
+    }
+
         
     void updatebouncers(int time)
     {
@@ -246,7 +261,7 @@ namespace game
             if(bnc.bouncetype==BNC_GRENADE && bnc.vel.magnitude() > 50.0f)
             {
                 vec pos = bnc.offsetpos();
-                regular_particle_splash(PART_SMOKE, 1, 150, pos, trailcolorgl, 2.4f, 50, -20);
+                regular_particle_splash(PART_SMOKE, 1, 150, pos, coloredtrails ? calctrailcolor(frequencymultiplier) : trailcolorgl, 2.4f, 50, -20);
             }
             vec old(bnc.o);
             bool stopped = false;
@@ -580,7 +595,7 @@ namespace game
                          }
                          particle_splash(guns[p.gun].part, 1, 1, pos, color, 4.8f, 150, 20);
                     }
-                    else regular_particle_splash(PART_SMOKE, 2, 300, pos, p.gun==GUN_RL ? trailcolorrl : 0x404040, 2.4f, 50, -20);
+                    else regular_particle_splash(PART_SMOKE, 2, 300, pos, p.gun==GUN_RL ? coloredtrails ? calctrailcolor(frequencymultiplier) : trailcolorrl : 0x404040, 2.4f, 50, -20);
                 }
             }
             if(exploded)
@@ -599,7 +614,6 @@ namespace game
     VARP(muzzleflash, 0, 1, 1);
     VARP(muzzlelight, 0, 1, 1);
     MODVARP(rifletraillightning, 0, 0, 1);
-    MODVARP(coloredrifle, 0, 0, 1);
 
     void shoteffects(int gun, const vec &from, const vec &to, fpsent *d, bool local, int id, int prevaction)     // create visual effect from a shot
     {
@@ -618,7 +632,7 @@ namespace game
                 loopi(guns[gun].rays)
                 {
                     particle_splash(PART_SPARK, 20, 250, rays[i], 0xB49B4B, 0.24f);
-                    particle_flare(hudgunorigin(gun, from, rays[i], d), rays[i], 300, PART_STREAK, trailcolorsg, 0.28f);
+                    particle_flare(hudgunorigin(gun, from, rays[i], d), rays[i], 300, PART_STREAK, coloredtrails ? calctrailcolor(frequencymultiplier) : trailcolorsg, 0.28f);
                     if(!local) adddecal(DECAL_BULLET, rays[i], vec(from).sub(rays[i]).safenormalize(), 2.0f);
                 }
                 if(muzzlelight) adddynlight(hudgunorigin(gun, d->o, to, d), 30, vec(0.5f, 0.375f, 0.25f), 100, 100, DL_FLASH, 0, vec(0, 0, 0), d);
@@ -629,7 +643,7 @@ namespace game
             case GUN_PISTOL:
             {
                 particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                particle_flare(hudgunorigin(gun, from, to, d), to, 600, PART_STREAK, gun==GUN_CG ? trailcolorcg : trailcolorpi, 0.28f);
+                particle_flare(hudgunorigin(gun, from, to, d), to, 600, PART_STREAK, gun==GUN_CG ? coloredtrails ? calctrailcolor(frequencymultiplier) : trailcolorcg : trailcolorpi, 0.28f);
                 if(muzzleflash && d->muzzle.x >= 0)
                     particle_flare(d->muzzle, d->muzzle, gun==GUN_CG ? 100 : 200, PART_MUZZLE_FLASH1, 0xFFFFFF, gun==GUN_CG ? 2.25f : 1.25f, d);
                 if(!local) adddecal(DECAL_BULLET, to, vec(from).sub(to).safenormalize(), 2.0f);
@@ -661,32 +675,14 @@ namespace game
             }
 
             case GUN_RIFLE:
-                if (coloredrifle)
+                if(rifletraillightning)
                 {
-                    int t = lastmillis % 6000;
-                    int r = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * t / 6000.0)), 0, 255);
-                    int g = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * (t + 1000) / 6000.0)), 0, 255);
-                    int b = clamp(static_cast<int>(128 + 128 * sin(2 * M_PI * frequencymultiplier * (t + 2000) / 6000.0)), 0, 255);
-                    int trailcoloredrifle = 0xFF0000 | (r << 16) | (g << 8) | b;
-
-                    if (rifletraillightning)
-                    {
-                        particle_flare(hudgunorigin(gun, from, to, d), to, 800, PART_LIGHTNING, trailcoloredrifle, 1.0f);
-                    }
-                    else
-                    {
-                        particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                        particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, trailcoloredrifle, 0.6f, 20);
-                    }
-                }
-                else if (rifletraillightning)
-                {
-                    particle_flare(hudgunorigin(gun, from, to, d), to, 800, PART_LIGHTNING, trailcolorri, 1.0f);
+                    particle_flare(hudgunorigin(gun, from, to, d), to, 800, PART_LIGHTNING, coloredtrails ? calctrailcolor(frequencymultiplier) : trailcolorri, 1.0f);
                 }
                 else
                 {
                     particle_splash(PART_SPARK, 200, 250, to, 0xB49B4B, 0.24f);
-                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, trailcolorri, 0.6f, 20);
+                    particle_trail(PART_SMOKE, 500, hudgunorigin(gun, from, to, d), to, coloredtrails ? calctrailcolor(frequencymultiplier) : trailcolorri, 0.6f, 20);
                 }
 
                 if (muzzleflash && d->muzzle.x >= 0)

@@ -8,7 +8,7 @@ paused spec movement;
 sessionlen - displaying the sessionlength into console
 VARP(renameprotection, 0, 0, 1);
 screenshot output message;
-VARP(hideping, 0, 0, 1);
+VARP(hideping, 0, 0, 1); // not anymore, might add back eventually
  -> VARP(pingvalue, INT_MIN, 0, INT_MAX);
 VARP(showctfflagicons, 0, 1, 1);
 add fragmessages
@@ -97,7 +97,6 @@ showbotskill option, shows botlevel instead of cn in their magenta bracket
 MODVARP(frequencymultiplier, 0, 4, 10); // :sparkles: colors :sparkles: 
 MODVARP(eventmsg, 0, 1, 1); // currently: only hb and quad msg - todo: all flag msg (code is there) & msgfilter // also, currently it shows no icon for hb despite working?
 // kind of my most useless addition so far but uhhh...
-    MODVARP(coloredrifle, 0, 0, 1); // rifle with colored trail
     MODVARP(rifletraillightning, 0, 0, 1);  // rifle with lightning trail (can also be colored)
 // yet another useless add -- adds a versioninit info! (fully customazible)
     MODVARP(saveconsolehistory, 0, 0, 1);
@@ -143,11 +142,11 @@ add flagrun measure included into scored-message
     bind 8  damagescreen 0; onrelease [ damagescreen 1]
     ICOMMAND(demotime, "ii", (int *m, int *s), { jumptotime(10*60 - (*m*60 + *s)); });
     ICOMMAND(demoskip, "ii", (int *m, int *s), { jumptotime(*m*60 + *s); });
+MODVARP(coloredtrails, 0, 1, 1); // colored trails for all weapons :sparkles:
 
 
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
-    add color loop to all weapons
     add uhh installer
 
 TODO stuff that i would love to see but most likely wont:
