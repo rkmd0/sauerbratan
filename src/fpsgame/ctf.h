@@ -28,7 +28,7 @@ struct ctfclientmode : clientmode
     {
         int id, version, spawnindex;
         vec droploc, spawnloc;
-        int team, droptime, owntime, holdtime;
+        int team, droptime, owntime, holdtime, runtimer;
 #ifdef SERVMODE
         int owner, dropcount, dropper, invistime;
 #else
@@ -986,6 +986,10 @@ struct ctfclientmode : clientmode
             flag &f = flags[goal];
             f.version = goalversion;
             f.spawnindex = goalspawn;
+            if(m_ctf){
+				if(relay >= 0 && flags.inrange(relay)) conoutf(CON_GAMEINFO, "%s scored for %s \f7(in \f0%.1f sec\f7)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"), float(lastmillis-flags[relay].runstarttimer)/1000.0f);
+				else conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
+			}
             if(m_hold) spawnflag(f);
             if(relay >= 0)
             {
@@ -998,6 +1002,7 @@ struct ctfclientmode : clientmode
             d->flagpickup &= ~(1<<f.id);
             if(d->feetpos().dist(f.spawnloc) < FLAGRADIUS) d->flagpickup |= 1<<f.id;
         }
+        if(!flags.inrange(goal) || !m_ctf) conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
         if(d!=player1)
         {
             defformatstring(ds, "%d", score);
@@ -1024,7 +1029,10 @@ struct ctfclientmode : clientmode
         if(d == player1) crosshairbumpeffect();
         if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolor("your team", d->team, "the enemy team"));
         else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
-        else conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
+        else  {
+			f.runstart = lastmillis;
+			conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
+		}
         ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);
         teamsound(d, S_FLAGPICKUP);
     }

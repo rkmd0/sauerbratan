@@ -1654,6 +1654,50 @@ namespace game
         draw_text(session_timer, conw - 10 * FONTH - 10, conh-FONTH*3/2);
     }
 
+    MODVARP(enablerec, 0, 1, 1);
+
+    void renderrecordindicator(int conw, int conh, int FONTH) {
+        static bool fadingout = false;
+        static int alpha = 255;
+        static int lastupdatetime = 0;
+        static const int fadeduration = 1000;   // duration of each fade cycle in milliseconds
+
+        if ((!recordclientdemo || !enablerec) && !demoplayback) {
+            alpha = 255;                        // reset alpha if recording is disabled
+            fadingout = false;                  // reset fading state
+            lastupdatetime = lastmillis;        // reset lastupdatetime to currentmillis
+            return;
+        }
+
+        int recleft = conw - 15 * FONTH - 10;
+        int rectop = conh - FONTH * 3 / 2;
+
+        int currenttime = lastmillis;
+
+        if (fadingout) {
+            // calc alpha based on time elapsed since last update
+            int elapsedTime = currenttime - lastupdatetime;
+            alpha = 255 - (elapsedTime * 255) / fadeduration;
+            if (alpha <= 0) {
+                alpha = 0;
+                fadingout = false; // toggle fading state
+                lastupdatetime = currenttime; // update last update time
+            }
+        } else {
+            // calculate alpha based on time elapsed since last update
+            int elapsedTime = currenttime - lastupdatetime;
+            alpha = (elapsedTime * 255) / fadeduration;
+            if (alpha >= 255) {
+                alpha = 255;
+                fadingout = true;
+                lastupdatetime = currenttime;
+            }
+        }
+
+        gle::color(vec(1, 1, 1), alpha);
+        draw_text("rec", recleft, rectop, 255, 255, 255, alpha, -1, -1);
+    }
+
     //int roundaccuracy(float accuracy) { return static_cast<int>(accuracy + 0.5); }
 
     MODVARP(showweaponstats, 0, 1, 1);
@@ -1943,6 +1987,7 @@ namespace game
         renderweaponstats(conw, conh, woffset, FONTH, roffset);
         renderSessionTimer(conw, conh, FONTH, roffset);
         renderAlivePlayersByTeam(conw, conh, roffset, FONTH);
+        renderrecordindicator(conw, conh, FONTH);
         if(displaynumberstats) { drawplayerdisplaysnumbers(conw, conh, FONTH); } 
         else { drawplayerdisplays(conw, conh, FONTH); }
         return true;

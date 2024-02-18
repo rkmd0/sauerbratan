@@ -112,7 +112,6 @@ VARP(saveduelstats, 0, 1, 1); // simple duel stats // maybe cw soon too + duels 
     MODVARP(wonduel, 0, 0, INT_MAX);
     MODVARP(drawduel, 0, 0, INT_MAX);
 MODVARP(clientnum2color, 0, 4, 9); // color for showclientnum 2 - default is 4 (grey)
-
 // playerdisplay for spec(!) only
     // might need to delete this eventually, if i ever plan on publish this kind due to abuse reasons
     MODVARP(showplayerstats, 0, 1, 1);
@@ -121,10 +120,8 @@ MODVARP(clientnum2color, 0, 4, 9); // color for showclientnum 2 - default is 4 (
     MODVARP(playerx, 0, 37, 10000); // need to manually put this, ideally though automatically on the same spot for every player
     MODVARP(playery, 0, 0, 10000);  // this too
     MODVARP(displaynumberstats, 0, 0, 1); // ugly way of switching between numberdisplay and bar display
-
 MODVARP(crosshairbump, 0, 1, 1);
 MODVARP(bumpsize, 0, 20, 50);
-
 // autofollow credit to https://github.com/extra-a/sauer-sdl2
 // what exactly is autofollow? - it's a feature that allows you to follow a player without having to manually switch to them
     MODVARP(disableautofollow, 0, 0, 1);
@@ -136,6 +133,9 @@ MODVARP(bumpsize, 0, 20, 50);
     MODVARP(recordclientdemo, 0, 0, 1);
     ICOMMAND(startclientdemo, "", (), setupdemorecord());
     ICOMMAND(stopclientdemo, "", (), enddemorecord());
+MODVARP(enablerec, 0, 1, 1); // record indicator - fades in and out
+add flagrun measure included into scored-message
+
 
 TODOS before first 'release':
     ultimatly ask jed on how to add the client version to the server
@@ -146,7 +146,6 @@ TODO stuff that i would love to see but most likely wont:
     demotime/demoskip
     fixed serverpreview
     make fillICharArray45 and fillICharArray50 VARP dependant
-    add a hud 'rec' symbol - for clientdemos
     ...
 
 
