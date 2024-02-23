@@ -988,7 +988,7 @@ struct ctfclientmode : clientmode
             f.spawnindex = goalspawn;
             if(m_ctf){
                 const char *colorCode = isteam(player1->team, d->team) ? "\f0" : "\f6";
-				if(relay >= 0 && flags.inrange(relay)) conoutf(CON_GAMEINFO, "%s scored for %s \f7(in %s%.1f sec\f7)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"), colorCode,float(lastmillis-flags[relay].runstarttimer)/1000.0f);
+				if(relay >= 0 && flags.inrange(relay)) conoutf(CON_GAMEINFO, "%s scored for %s \f7(in %s%.1f sec\f7)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"), colorCode,float(lastmillis-flags[relay].runtimer)/1000.0f);
 				else conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
 			}
             if(m_hold) spawnflag(f);
@@ -1031,7 +1031,7 @@ struct ctfclientmode : clientmode
         if(m_hold) conoutf(CON_GAMEINFO, "%s picked up the flag for %s", teamcolorname(d), teamcolor("your team", d->team, "the enemy team"));
         else if(m_protect || f.droptime) conoutf(CON_GAMEINFO, "%s picked up %s", teamcolorname(d), teamcolorflag(f));
         else  {
-			f.runstart = lastmillis;
+			f.runtimer = lastmillis;
 			conoutf(CON_GAMEINFO, "%s stole %s", teamcolorname(d), teamcolorflag(f));
 		}
         ownflag(i, d, lastmillis, m_hold ? ctfteamflag(d->team) : -1);
