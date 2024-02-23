@@ -689,7 +689,7 @@ namespace game
         deathstate(d);
 		ai::killed(d, actor);
     }
-
+    // maptime is the client side time in milliseconds when the engine called map start 
     // keep tracks of duels
     bool isduelmode()
     {
@@ -1777,7 +1777,7 @@ namespace game
     MODVARP(displayarmourstatus, 0, 0, 1); // 1 -> added to the health bar, 2 -> under the health bar (todo)
     MODVARP(playerx, 0, 37, 10000); // need to manually put this, ideally though automatically on the same spot for every player
     MODVARP(playery, 0, 0, 10000);  // this too
-    MODVARP(displaynumberstats, 0, 0, 1); // ugly
+    MODVARP(displaynumberstats, 0, 1, 1); // ugly
 
     // a lot of 'playing around'
     void drawplayerdisplays(int conw, int conh, int FONTH)
@@ -1804,6 +1804,8 @@ namespace game
                 if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || isteam(player1->team, p->team))
                     continue;
                 millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
+                char respawnWaitString[10];
+                snprintf(respawnWaitString, sizeof(respawnWaitString), "%d", cmode ? cmode->respawnwait(p) : 0);
                 int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
                 const char *name = colorname(p);
 
@@ -1813,7 +1815,7 @@ namespace game
                 //int namecolor = statuscolor(p, 0xFFFFDD);
                 int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
                 char playerInfo[256];
-                snprintf(playerInfo, sizeof(playerInfo), "%s%s %s%s", p->quadmillis ? "\f7" : "", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "", p->state == CS_DEAD ? respawnWaitString  : "");
                 //snprintf(playerInfo, sizeof(playerInfo), "%s", name);
                 draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
 
@@ -1839,7 +1841,7 @@ namespace game
 
             }
 
-            if(m_teammode || player1->state == CS_SPECTATOR ) {
+            if(m_teammode && player1->state == CS_SPECTATOR ) {
                 y_offset += FONTH;
                 const char *teamName = m_teammode ? strcmp(player1->team, "good") == 0 ? "\f1good" : "\f3evil"  : "";
                 draw_text(teamName, playerx, playery + y_offset);
@@ -1853,6 +1855,8 @@ namespace game
                 fpsent *p = players[i];
                 if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || !isteam(player1->team, p->team))
                     continue;
+                char respawnWaitString[10]; // Assuming the respawn wait time won't exceed 10 characters
+                snprintf(respawnWaitString, sizeof(respawnWaitString), "%d", cmode ? cmode->respawnwait(p) : 0);
                 millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
                 int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
                 const char *name = colorname(p);
@@ -1863,7 +1867,7 @@ namespace game
                 //int namecolor = statuscolor(p, 0xFFFFDD);
                 int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
                 char playerInfo[256];  
-                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "", p->state == CS_DEAD ? respawnWaitString  : "");
                 draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
 
                 if(!m_insta) {
@@ -1906,6 +1910,8 @@ namespace game
                 if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || isteam(player1->team, p->team))
                     continue;
                 millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
+                char respawnWaitString[10];
+                snprintf(respawnWaitString, sizeof(respawnWaitString), "%d", cmode ? cmode->respawnwait(p) : 0);
                 int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
                 const char *name = colorname(p);
 
@@ -1915,7 +1921,7 @@ namespace game
                 //int namecolor = statuscolor(p, 0xFFFFDD);
                 int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
                 char playerInfo[256];
-                snprintf(playerInfo, sizeof(playerInfo), "%s%s %s%s", p->quadmillis ? "\f7" : "", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "", p->state == CS_DEAD ? respawnWaitString : "");
                 //snprintf(playerInfo, sizeof(playerInfo), "%s", name);
                 draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
 
@@ -1951,6 +1957,8 @@ namespace game
                 fpsent *p = players[i];
                 if (!p || p == player1 || p->state == CS_SPECTATOR || player1->state != CS_SPECTATOR || !isteam(player1->team, p->team))
                     continue;
+                char respawnWaitString[10];
+                snprintf(respawnWaitString, sizeof(respawnWaitString), "%d", cmode ? cmode->respawnwait(p) : 0);
                 millis2timer(p->quadmillis, quadTimer, sizeof(quadTimer));
                 int alpha = p->state == CS_DEAD ? 0x7F : 0xFF;
                 const char *name = colorname(p);
@@ -1961,7 +1969,7 @@ namespace game
                 //int namecolor = statuscolor(p, 0xFFFFDD);
                 int namecolor = m_teammode ? isteam(player1->team, p->team) ? 0xFFFFDD : 0xFFFFDD : statuscolor(p, 0xFFFFDD);
                 char playerInfo[256];
-                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "");
+                snprintf(playerInfo, sizeof(playerInfo), "%s %s%s%s", name, hasflag(p) ? "\f7\xF2" : "", p->quadmillis ? quadTimer : "", p->state == CS_DEAD ? respawnWaitString : "");
                 draw_text(playerInfo, x, y, (namecolor >> 16) & 0xFF, (namecolor >> 8) & 0xFF, namecolor & 0xFF, alpha);
 
             if (!m_insta) {

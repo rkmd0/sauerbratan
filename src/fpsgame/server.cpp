@@ -1246,30 +1246,36 @@ namespace server
     }
 
     MODVARP(allowdemofollow, 0, 1, 1);
+    
     int jumptoonce = -1;
-	void changemap(const char *s, int mode);
+    void changemap(const char *s, int mode);
+    extern void readdemo();
+    extern bool checkovertime();
+    bool overtimeyoo = checkovertime();
+
 
 	void jumptotime(int secs)
 	{
-		if (secs*1000 < demomillis && jumptoonce < 0)
-		{
-		    int follow_client = game::following >= 0 ? game::followingplayer()->clientnum : -1;
-			jumptoonce = secs;
-			changemap(smapname, gamemode);
-            if (follow_client >= 0 && allowdemofollow)
+    if (secs*1000 < demomillis && jumptoonce < 0)
             {
-                game::following = follow_client;
+                int follow_client = game::following >= 0 ? game::followingplayer()->clientnum : -1;
+                jumptoonce = secs;
+                changemap(smapname, gamemode);
+                if (follow_client >= 0 && allowdemofollow)     // fix damagescreenmillis 
+                {
+                    game::following = follow_client;
+                    //conoutf("Still following client %d", follow_client);
+                }
             }
-		}
-		else
-		{
-			jumptoonce = -1;
-			demomillis = secs*1000;
-			sendf(-1, 1, "rii", N_TIMEUP, 10*60 - secs);
-		}
+            else
+            {
+                jumptoonce = -1;
+                demomillis = secs*1000;
+                sendf(-1, 1, "ri2", N_TIMEUP, (overtimeyoo ? max(gamemillis, gamelimit) + 2*60000 : 10)*60 - secs);
+            }
 	}
 
-	ICOMMAND(demotime, "ii", (int *m, int *s), { jumptotime(10*60 - (*m*60 + *s)); });
+	ICOMMAND(demotime, "ii", (int *m, int *s), { jumptotime((overtimeyoo ? max(gamemillis, gamelimit) + 2*60000 : 10)*60 - (*m*60 + *s)); });
 	ICOMMAND(demoskip, "ii", (int *m, int *s), { jumptotime(*m*60 + *s); });
 
 
@@ -1315,7 +1321,7 @@ namespace server
         if(secs <= 0) interm = -1;
         else gamelimit = max(gamelimit, nextplayback + secs*1000);
     }
-
+    // change gamemillis with demomillis
     void seekdemo(char *t)
     {
         if(!demoplayback) return;
@@ -1325,20 +1331,20 @@ namespace server
         if(*t == ':') secs = strtoul(t+1, &t, 10);
         else { secs = mins; mins = 0; }
         if(*t == '.') millis = strtoul(t+1, &t, 10);
-        int offset = max(millis + (mins*60 + secs)*1000, 0), prevmillis = gamemillis;
-        if(rev) while(gamelimit - offset > gamemillis)
+        int offset = max(millis + (mins*60 + secs)*1000, 0), prevmillis = demomillis;
+        if(rev) while(gamelimit - offset > demomillis)
         {
-            gamemillis = gamelimit - offset;
+            demomillis = gamelimit - offset;
             readdemo();
         }
-        else if(offset > gamemillis)
+        else if(offset > demomillis)
         {
-            gamemillis = offset;
+            demomillis = offset;
             readdemo();
         }
-        if(gamemillis > prevmillis)
+        if(demomillis > prevmillis)
         {
-            if(!interm) sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - gamemillis)/1000, 1));
+            if(!interm) sendf(-1, 1, "ri2", N_TIMEUP, max((gamelimit - demomillis)/1000, 1));
 #ifndef STANDALONE
             cleardamagescreen();
 #endif
@@ -1350,8 +1356,8 @@ namespace server
         if(*numargs > 0) seekdemo(t);
         else
         {
-            int secs = gamemillis/1000;
-            defformatstring(str, "%d:%02d.%03d", secs/60, secs%60, gamemillis%1000);
+            int secs = demomillis/1000;
+            defformatstring(str, "%d:%02d.%03d", secs/60, secs%60, demomillis%1000);
             if(*numargs < 0) result(str);
             else printsvar(id, str);
         }

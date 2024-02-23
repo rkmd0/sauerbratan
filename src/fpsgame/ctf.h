@@ -987,7 +987,8 @@ struct ctfclientmode : clientmode
             f.version = goalversion;
             f.spawnindex = goalspawn;
             if(m_ctf){
-				if(relay >= 0 && flags.inrange(relay)) conoutf(CON_GAMEINFO, "%s scored for %s \f7(in \f0%.1f sec\f7)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"), float(lastmillis-flags[relay].runstarttimer)/1000.0f);
+                const char *colorCode = isteam(player1->team, d->team) ? "\f0" : "\f6";
+				if(relay >= 0 && flags.inrange(relay)) conoutf(CON_GAMEINFO, "%s scored for %s \f7(in %s%.1f sec\f7)", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"), colorCode,float(lastmillis-flags[relay].runstarttimer)/1000.0f);
 				else conoutf(CON_GAMEINFO, "%s scored for %s", teamcolorname(d), teamcolor("your team", ctfflagteam(team), "the enemy team"));
 			}
             if(m_hold) spawnflag(f);
