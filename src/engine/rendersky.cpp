@@ -76,6 +76,9 @@ FVARR(cloudalpha, 0, 1, 1);
 VARR(cloudsubdiv, 4, 16, 64);
 HVARR(cloudcolour, 0, 0xFFFFFF, 0xFFFFFF);
 
+MODVARP(disablesky, 0, 0, 1);
+
+
 void drawenvboxface(float s0, float t0, int x0, int y0, int z0,
                     float s1, float t1, int x1, int y1, int z1,
                     float s2, float t2, int x2, int y2, int z2,
@@ -142,7 +145,7 @@ void drawenvoverlay(int w, Texture *overlay = NULL, float tx = 0, float ty = 0)
 {
     float z = w*cloudheight, tsz = 0.5f*(1-cloudfade)/cloudscale, psz = w*(1-cloudfade);
     glBindTexture(GL_TEXTURE_2D, overlay ? overlay->id : notexture->id);
-    vec color = vec::hexcolor(cloudcolour);
+    vec color = vec::hexcolor(disablesky ? 0x000000 : cloudcolour);
     gle::color(color, cloudalpha);
     gle::defvertex();
     gle::deftexcoord0();
@@ -314,7 +317,8 @@ namespace fogdome
     void draw()
     {
         float capsize = fogdomecap && fogdomeheight < 1 ? (1 + fogdomeheight) / (1 - fogdomeheight) : -1;
-        bvec color = fogdomecolour ? fogdomecolor : fogcolor;
+        //bvec color = fogdomecolour ? fogdomecolor : fogcolor;
+        bvec color = disablesky ? bvec::hexcolor(0x000000) : fogdomecolour ? fogdomecolor : fogcolor;
         if(!numverts || lastcolor != color || lastminalpha != fogdomemin || lastmaxalpha != fogdomemax || lastcapsize != capsize || lastclipz != fogdomeclip)
         {
             init(color, min(fogdomemin, fogdomemax), fogdomemax, capsize, fogdomeclip);
@@ -653,7 +657,9 @@ void drawskybox(int farplane, bool limited, bool force)
         if(glaring) SETSHADER(skyboxglare);
         else SETSHADER(skybox);
 
-        gle::color(vec::hexcolor(skyboxcolour));
+        //gle::color(vec::hexcolor(skyboxcolour));
+        gle::color(vec::hexcolor(disablesky ? 0x000000 : skyboxcolour));
+
 
         matrix4 skymatrix = cammatrix, skyprojmatrix;
         skymatrix.settranslation(0, 0, 0);
@@ -664,7 +670,7 @@ void drawskybox(int farplane, bool limited, bool force)
         drawenvbox(farplane/2, skyclip, topclip, yawskyfaces(renderedskyfaces, yawsky, spinsky), sky);
     }
 
-    if(atmo)
+    if(atmo && !disablesky)
     {
         if(atmoalpha < 1)
         {
@@ -695,7 +701,9 @@ void drawskybox(int farplane, bool limited, bool force)
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-            gle::color(vec::hexcolor(cloudboxcolour), cloudboxalpha);
+            //gle::color(vec::hexcolor(cloudboxcolour), cloudboxalpha);
+            gle::color(vec::hexcolor(disablesky ? 0x000000 : cloudboxcolour), cloudboxalpha);
+
 
             matrix4 skymatrix = cammatrix, skyprojmatrix;
             skymatrix.settranslation(0, 0, 0);

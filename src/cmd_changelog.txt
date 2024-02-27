@@ -143,6 +143,7 @@ add flagrun measure included into scored-message
     ICOMMAND - demotime mm ss
     ICOMMAND - demoskip // untested, use seekdemo instead
 MODVARP(coloredtrails, 0, 1, 1); // colored trails for all weapons :sparkles:
+MODVARP(disablesky, 0, 0, 1);
 
 
 TODOS before first 'release':
