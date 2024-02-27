@@ -696,6 +696,97 @@ namespace game
     HVARP(hudscoreplayercolour, 0, 0x60A0FF, 0xFFFFFF);
     HVARP(hudscoreenemycolour, 0, 0xFF4040, 0xFFFFFF);
     VARP(hudscorealpha, 0, 255, 255);
+    VARP(hudscoresep, 0, 100, 1000);
+    MODVARP(hudscorelabels, 0, 1, 1);
+    MODFVARP(hudscorelabelscale, 1e-3f, 0.6f, 1e3f);
+    MODVARP(hudscorelabelsep, 0, 32, 1000);
+
+    void drawhudscoreslot(char const *label, int score, bool friendly, bool flip)
+    {
+        string scorebuf;
+        if (m_capture && score > 9999) copystring(scorebuf, "WIN");
+        else formatstring(scorebuf, "%d", score);
+        int cw, ch; text_bounds("999", cw, ch); // initial score container size
+        int sw, sh; text_bounds(scorebuf, sw, sh);
+        cw = max(cw, sw); ch = max(ch, sh); // grow container if necessary
+        
+        vec2 const scoredrawpos = vec2(hudscoresep + cw / 2.0f, 0).mul(flip ? -1 : 1).sub(vec2(sw, sh).div(2));
+        bvec const scorecolor = bvec::hexcolor(friendly ? hudscoreplayercolour : hudscoreenemycolour);
+        draw_text(scorebuf, scoredrawpos.x, scoredrawpos.y, scorecolor.r, scorecolor.g, scorecolor.b, hudscorealpha);
+        
+        if (!hudscorelabels) return;
+        vec2 const labelorigin = vec2(hudscoresep + cw + hudscorelabelsep, 0).mul(flip ? -1 : 1);
+        pushhudmatrix();
+        hudmatrix.translate(labelorigin.x, labelorigin.y, 0);
+        hudmatrix.scale(hudscorelabelscale, hudscorelabelscale, 1);
+        flushhudmatrix();
+        
+        int lw, lh; text_bounds(label, lw, lh);
+        draw_text(label, flip ? -lw : 0, -lh / 2.0f, 0xFF, 0xFF, 0xFF, hudscorealpha);
+        
+        pophudmatrix();
+    }
+
+    fpsent *getpovplayer()
+    {
+        return player1->state == CS_SPECTATOR ? followingplayer() : player1;
+    }
+
+    scoregroup *findgroup(int numgroups, char const *team)
+    {
+        loopi(numgroups) if (isteam(team, groups[i]->team)) return groups[i];
+        return NULL;
+    }
+
+    void drawhudscoreteams(int numgroups)
+    {
+        if (numgroups < 1) return;
+        scoregroup *g1 = groups[0];
+        drawhudscoreslot(g1->team, g1->score, isteam(player1->team, g1->team), true);
+        
+        if (numgroups < 2) return;
+        scoregroup *povgroup = findgroup(numgroups, player1->team);
+        scoregroup *g2 = povgroup && !isteam(povgroup->team, g1->team) ? povgroup : groups[1];
+        drawhudscoreslot(g2->team, g2->score, isteam(povgroup->team, g2->team), false);
+    }
+
+    void drawhudscoreplayers(vector<fpsent *> const &players)
+    {
+        if (players.length() < 1) return;
+        fpsent *pov = getpovplayer();
+        fpsent *p1 = players[0];
+        drawhudscoreslot(colorname(p1), p1->frags, pov == p1, true);
+
+        if (players.length() < 2) return;
+        fpsent *p2 = pov && pov != p1 ? pov : players[1];
+        drawhudscoreslot(colorname(p2), p2->frags, pov == p2, false);
+    }
+
+    void drawhudscore(int w, int h)
+    {
+        int const numgroups = groupplayers();
+        if (numgroups == 0) return;
+
+        pushhudmatrix();
+        hudmatrix.translate(hudscorex * w, hudscorey * h, 0);
+        hudmatrix.scale(hudscorescale, hudscorescale, 1);
+        flushhudmatrix();
+        if (m_teammode) drawhudscoreteams(numgroups);
+        else drawhudscoreplayers(groups[0]->players);
+        pophudmatrix();
+    }
+
+    // simple comment out
+    // ultimatly change some stuff
+
+    /*VARP(hudscore, 0, 0, 1);
+    FVARP(hudscorescale, 1e-3f, 1.0f, 1e3f);
+    VARP(hudscorealign, -1, 0, 1);
+    FVARP(hudscorex, 0, 0.50f, 1);
+    FVARP(hudscorey, 0, 0.03f, 1);
+    HVARP(hudscoreplayercolour, 0, 0x60A0FF, 0xFFFFFF);
+    HVARP(hudscoreenemycolour, 0, 0xFF4040, 0xFFFFFF);
+    VARP(hudscorealpha, 0, 255, 255);
     VARP(hudscoresep, 0, 200, 1000);
 
     void drawhudscore(int w, int h)
@@ -774,6 +865,6 @@ namespace game
         if(score2 > INT_MIN) draw_text(buf2, int(offset2.x), int(offset2.y), (color2>>16)&0xFF, (color2>>8)&0xFF, color2&0xFF, hudscorealpha);
 
         pophudmatrix();
-    }
+    }*/
 }
 

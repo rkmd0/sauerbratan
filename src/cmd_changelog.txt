@@ -144,6 +144,10 @@ add flagrun measure included into scored-message
     ICOMMAND - demoskip // untested, use seekdemo instead
 MODVARP(coloredtrails, 0, 1, 1); // colored trails for all weapons :sparkles:
 MODVARP(disablesky, 0, 0, 1);
+// credits to redon for this awesome addition
+    MODVARP(hudscorelabels, 0, 1, 1);
+    MODFVARP(hudscorelabelscale, 1e-3f, 0.6f, 1e3f);
+    MODVARP(hudscorelabelsep, 0, 32, 1000);
 
 
 TODOS before first 'release':
